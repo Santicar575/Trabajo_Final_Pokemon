@@ -1,0 +1,365 @@
+name,type,category,pp,power,accuracy
+Pound,normal,physical,35,40,100
+Karate Chop,fighting,physical,25,50,100
+Double Slap,normal,physical,10,15,85
+Comet Punch,normal,physical,15,18,85
+Mega Punch,normal,physical,20,80,85
+Pay Day,normal,physical,20,40,100
+Fire Punch,fire,physical,15,75,100
+Ice Punch,ice,physical,15,75,100
+Thunder Punch,electric,physical,15,75,100
+Scratch,normal,physical,35,40,100
+Vice Grip,normal,physical,30,55,100
+Cut,normal,physical,30,50,95
+Gust,flying,special,35,40,100
+Wing Attack,flying,physical,35,60,100
+Fly,flying,physical,15,90,95
+Slam,normal,physical,20,80,75
+Vine Whip,grass,physical,25,45,100
+Stomp,normal,physical,20,65,100
+Double Kick,fighting,physical,30,30,100
+Mega Kick,normal,physical,5,120,75
+Jump Kick,fighting,physical,10,100,95
+Rolling Kick,fighting,physical,15,60,85
+Headbutt,normal,physical,15,70,100
+Horn Attack,normal,physical,25,65,100
+Fury Attack,normal,physical,20,15,85
+Body Slam,normal,physical,15,85,100
+Take Down,normal,physical,20,90,85
+Thrash,normal,physical,10,120,100
+Double-Edge,normal,physical,15,120,100
+Poison Sting,poison,physical,35,15,100
+Twineedle,bug,physical,20,25,100
+Bite,dark,physical,25,60,100
+Acid,poison,special,30,40,100
+Ember,fire,special,25,40,100
+Flamethrower,fire,special,15,90,100
+Water Gun,water,special,25,40,100
+Hydro Pump,water,special,5,110,80
+Surf,water,special,15,90,100
+Ice Beam,ice,special,10,90,100
+Psybeam,psychic,special,20,65,100
+Bubble Beam,water,special,20,65,100
+Aurora Beam,ice,special,20,65,100
+Hyper Beam,normal,special,5,150,90
+Peck,flying,physical,35,35,100
+Drill Peck,flying,physical,20,80,100
+Submission,fighting,physical,20,80,80
+Strength,normal,physical,15,80,100
+Absorb,grass,special,25,20,100
+Mega Drain,grass,special,15,40,100
+Razor Leaf,grass,physical,25,55,95
+Solar Beam,grass,special,10,120,100
+Petal Dance,grass,special,10,120,100
+Thunder Shock,electric,special,30,40,100
+Thunderbolt,electric,special,15,90,100
+Thunder,electric,special,10,110,70
+Earthquake,ground,physical,10,100,100
+Dig,ground,physical,10,80,100
+Confusion,psychic,special,25,50,100
+Psychic,psychic,special,10,90,100
+Quick Attack,normal,physical,30,40,100
+Rage,normal,physical,20,20,100
+Self-Destruct,normal,physical,5,200,100
+Egg Bomb,normal,physical,10,100,75
+Lick,ghost,physical,30,30,100
+Smog,poison,special,20,30,70
+Sludge,poison,special,20,65,100
+Bone Club,ground,physical,20,65,85
+Fire Blast,fire,special,5,110,85
+Waterfall,water,physical,15,80,100
+Skull Bash,normal,physical,10,130,100
+Spike Cannon,normal,physical,15,20,100
+Constrict,normal,physical,35,10,100
+High Jump Kick,fighting,physical,10,130,90
+Dream Eater,psychic,special,15,100,100
+Barrage,normal,physical,20,15,85
+Leech Life,bug,physical,10,80,100
+Sky Attack,flying,physical,5,140,90
+Bubble,water,special,30,40,100
+Dizzy Punch,normal,physical,10,70,100
+Explosion,normal,physical,5,250,100
+Fury Swipes,normal,physical,15,18,80
+Bonemerang,ground,physical,10,50,90
+Rock Slide,rock,physical,10,75,90
+Hyper Fang,normal,physical,15,80,90
+Tri Attack,normal,special,10,80,100
+Slash,normal,physical,20,70,100
+Triple Kick,fighting,physical,10,10,90
+Thief,dark,physical,25,60,100
+Flame Wheel,fire,physical,25,60,100
+Snore,normal,special,15,50,100
+Aeroblast,flying,special,5,100,95
+Powder Snow,ice,special,25,40,100
+Mach Punch,fighting,physical,30,40,100
+Sludge Bomb,poison,special,10,90,100
+Mud-Slap,ground,special,10,20,100
+Octazooka,water,special,10,65,85
+Zap Cannon,electric,special,5,120,50
+Icy Wind,ice,special,15,55,95
+Outrage,dragon,physical,10,120,100
+Giga Drain,grass,special,10,75,100
+Rollout,rock,physical,20,30,90
+False Swipe,normal,physical,40,40,100
+Spark,electric,physical,20,65,100
+Fury Cutter,bug,physical,20,40,95
+Steel Wing,steel,physical,25,70,90
+Sacred Fire,fire,physical,5,100,95
+Dynamic Punch,fighting,physical,5,100,50
+Megahorn,bug,physical,10,120,85
+Dragon Breath,dragon,special,20,60,100
+Pursuit,dark,physical,20,40,100
+Rapid Spin,normal,physical,40,20,100
+Iron Tail,steel,physical,15,100,75
+Metal Claw,steel,physical,35,50,95
+Hidden Power,normal,special,15,60,100
+Cross Chop,fighting,physical,5,100,80
+Twister,dragon,special,20,40,100
+Crunch,dark,physical,15,80,100
+Extreme Speed,normal,physical,5,80,100
+Ancient Power,rock,special,5,60,100
+Shadow Ball,ghost,special,15,80,100
+Rock Smash,fighting,physical,15,40,100
+Fake Out,normal,physical,10,40,100
+Uproar,normal,special,10,90,100
+Heat Wave,fire,special,10,95,90
+Facade,normal,physical,20,70,100
+Focus Punch,fighting,physical,20,150,100
+Smelling Salts,normal,physical,10,70,100
+Superpower,fighting,physical,5,120,100
+Revenge,fighting,physical,10,60,100
+Brick Break,fighting,physical,15,75,100
+Knock Off,dark,physical,20,65,100
+Eruption,fire,special,5,150,100
+Secret Power,normal,physical,20,70,100
+Dive,water,physical,10,80,100
+Arm Thrust,fighting,physical,20,15,100
+Luster Purge,psychic,special,5,70,100
+Mist Ball,psychic,special,5,70,100
+Blaze Kick,fire,physical,10,85,90
+Ice Ball,ice,physical,20,30,90
+Needle Arm,grass,physical,15,60,100
+Hyper Voice,normal,special,10,90,100
+Poison Fang,poison,physical,15,50,100
+Crush Claw,normal,physical,10,75,95
+Blast Burn,fire,special,5,150,90
+Hydro Cannon,water,special,5,150,90
+Astonish,ghost,physical,15,30,100
+Weather Ball,normal,special,10,50,100
+Air Cutter,flying,special,25,60,95
+Overheat,fire,special,5,130,90
+Silver Wind,bug,special,5,60,100
+Water Spout,water,special,5,150,100
+Signal Beam,bug,special,15,75,100
+Extrasensory,psychic,special,20,80,100
+Sky Uppercut,fighting,physical,15,85,90
+Muddy Water,water,special,10,90,85
+Bullet Seed,grass,physical,30,25,100
+Icicle Spear,ice,physical,30,25,100
+Dragon Claw,dragon,physical,15,80,100
+Frenzy Plant,grass,special,5,150,90
+Bounce,flying,physical,5,85,85
+Mud Shot,ground,special,15,55,95
+Poison Tail,poison,physical,25,50,100
+Covet,normal,physical,25,60,100
+Volt Tackle,electric,physical,15,120,100
+Leaf Blade,grass,physical,15,90,100
+Water Pulse,water,special,20,60,100
+Psycho Boost,psychic,special,5,140,90
+Wake-Up Slap,fighting,physical,10,70,100
+Hammer Arm,fighting,physical,10,100,90
+Brine,water,special,10,65,100
+Feint,normal,physical,10,30,100
+Pluck,flying,physical,20,60,100
+U-turn,bug,physical,20,70,100
+Close Combat,fighting,physical,5,120,100
+Payback,dark,physical,10,50,100
+Assurance,dark,physical,10,60,100
+Last Resort,normal,physical,5,140,100
+Sucker Punch,dark,physical,5,70,100
+Flare Blitz,fire,physical,15,120,100
+Force Palm,fighting,physical,10,60,100
+Poison Jab,poison,physical,20,80,100
+Dark Pulse,dark,special,15,80,100
+Night Slash,dark,physical,15,70,100
+Aqua Tail,water,physical,10,90,90
+Seed Bomb,grass,physical,15,80,100
+Air Slash,flying,special,15,75,95
+X-Scissor,bug,physical,15,80,100
+Bug Buzz,bug,special,10,90,100
+Dragon Pulse,dragon,special,10,85,100
+Dragon Rush,dragon,physical,10,100,75
+Power Gem,rock,special,20,80,100
+Drain Punch,fighting,physical,10,75,100
+Vacuum Wave,fighting,special,30,40,100
+Focus Blast,fighting,special,5,120,70
+Energy Ball,grass,special,10,90,100
+Brave Bird,flying,physical,15,120,100
+Earth Power,ground,special,10,90,100
+Giga Impact,normal,physical,5,150,90
+Bullet Punch,steel,physical,30,40,100
+Avalanche,ice,physical,10,60,100
+Ice Shard,ice,physical,30,40,100
+Shadow Claw,ghost,physical,15,70,100
+Thunder Fang,electric,physical,15,65,95
+Ice Fang,ice,physical,15,65,95
+Fire Fang,fire,physical,15,65,95
+Shadow Sneak,ghost,physical,30,40,100
+Mud Bomb,ground,special,10,65,85
+Psycho Cut,psychic,physical,20,70,100
+Zen Headbutt,psychic,physical,15,80,90
+Mirror Shot,steel,special,10,65,85
+Flash Cannon,steel,special,10,80,100
+Rock Climb,normal,physical,20,90,85
+Draco Meteor,dragon,special,5,130,90
+Discharge,electric,special,15,80,100
+Lava Plume,fire,special,15,80,100
+Leaf Storm,grass,special,5,130,90
+Power Whip,grass,physical,10,120,85
+Rock Wrecker,rock,physical,5,150,90
+Cross Poison,poison,physical,20,70,100
+Iron Head,steel,physical,15,80,100
+Stone Edge,rock,physical,5,100,80
+Chatter,flying,special,20,65,100
+Judgment,normal,special,10,100,100
+Bug Bite,bug,physical,20,60,100
+Charge Beam,electric,special,10,50,90
+Wood Hammer,grass,physical,15,120,100
+Aqua Jet,water,physical,20,40,100
+Attack Order,bug,physical,15,90,100
+Head Smash,rock,physical,5,150,80
+Double Hit,normal,physical,10,35,90
+Roar of Time,dragon,special,5,150,90
+Spacial Rend,dragon,special,5,100,95
+Seed Flare,grass,special,5,120,85
+Ominous Wind,ghost,special,5,60,100
+Shadow Force,ghost,physical,5,120,100
+Psyshock,psychic,special,10,80,100
+Venoshock,poison,special,10,65,100
+Smack Down,rock,physical,15,50,100
+Storm Throw,fighting,physical,10,60,100
+Flame Burst,fire,special,15,70,100
+Sludge Wave,poison,special,10,95,100
+Synchronoise,psychic,special,10,120,100
+Flame Charge,fire,physical,20,50,100
+Low Sweep,fighting,physical,20,65,100
+Acid Spray,poison,special,20,40,100
+Foul Play,dark,physical,15,95,100
+Round,normal,special,15,60,100
+Echoed Voice,normal,special,15,40,100
+Chip Away,normal,physical,20,70,100
+Stored Power,psychic,special,10,20,100
+Scald,water,special,15,80,100
+Hex,ghost,special,10,65,100
+Sky Drop,flying,physical,10,60,100
+Circle Throw,fighting,physical,10,60,90
+Incinerate,fire,special,15,60,100
+Acrobatics,flying,physical,15,55,100
+Retaliate,normal,physical,5,70,100
+Inferno,fire,special,5,100,50
+Water Pledge,water,special,10,80,100
+Fire Pledge,fire,special,10,80,100
+Grass Pledge,grass,special,10,80,100
+Volt Switch,electric,special,20,70,100
+Struggle Bug,bug,special,20,50,100
+Bulldoze,ground,physical,20,60,100
+Frost Breath,ice,special,10,60,90
+Dragon Tail,dragon,physical,10,60,90
+Electroweb,electric,special,15,55,95
+Wild Charge,electric,physical,15,90,100
+Drill Run,ground,physical,10,80,95
+Dual Chop,dragon,physical,15,40,90
+Heart Stamp,psychic,physical,25,60,100
+Horn Leech,grass,physical,10,75,100
+Sacred Sword,fighting,physical,15,90,100
+Razor Shell,water,physical,10,75,95
+Leaf Tornado,grass,special,10,65,90
+Steamroller,bug,physical,20,65,100
+Night Daze,dark,special,10,85,95
+Psystrike,psychic,special,10,100,100
+Tail Slap,normal,physical,10,25,85
+Hurricane,flying,special,10,110,70
+Head Charge,normal,physical,15,120,100
+Gear Grind,steel,physical,15,50,85
+Searing Shot,fire,special,5,100,100
+Techno Blast,normal,special,5,120,100
+Relic Song,normal,special,10,75,100
+Secret Sword,fighting,special,10,85,100
+Glaciate,ice,special,10,65,95
+Bolt Strike,electric,physical,5,130,85
+Blue Flare,fire,special,5,130,85
+Fiery Dance,fire,special,10,80,100
+Freeze Shock,ice,physical,5,140,90
+Ice Burn,ice,special,5,140,90
+Snarl,dark,special,15,55,95
+Icicle Crash,ice,physical,10,85,90
+V-create,fire,physical,5,180,95
+Fusion Flare,fire,special,5,100,100
+Fusion Bolt,electric,physical,5,100,100
+Flying Press,fighting,physical,10,100,95
+Belch,poison,special,10,120,90
+Fell Stinger,bug,physical,25,50,100
+Phantom Force,ghost,physical,10,90,100
+Parabolic Charge,electric,special,20,65,100
+Petal Blizzard,grass,physical,15,90,100
+Freeze-Dry,ice,special,20,70,100
+Draining Kiss,fairy,special,10,50,100
+Play Rough,fairy,physical,10,90,90
+Fairy Wind,fairy,special,30,40,100
+Moonblast,fairy,special,15,95,100
+Boomburst,normal,special,10,140,100
+Diamond Storm,rock,physical,5,100,95
+Steam Eruption,water,special,5,110,95
+Water Shuriken,water,special,20,15,100
+Mystical Fire,fire,special,10,75,100
+Dazzling Gleam,fairy,special,10,80,100
+Nuzzle,electric,physical,20,20,100
+Hold Back,normal,physical,40,40,100
+Infestation,bug,special,20,20,100
+Power-Up Punch,fighting,physical,20,40,100
+Oblivion Wing,flying,special,10,80,100
+Thousand Arrows,ground,physical,10,90,100
+Thousand Waves,ground,physical,10,90,100
+Land's Wrath,ground,physical,10,90,100
+Light of Ruin,fairy,special,5,140,90
+Origin Pulse,water,special,10,110,85
+Precipice Blades,ground,physical,10,120,85
+Dragon Ascent,flying,physical,5,120,100
+First Impression,bug,physical,10,90,100
+Spirit Shackle,ghost,physical,10,80,100
+Darkest Lariat,dark,physical,10,85,100
+Sparkling Aria,water,special,10,90,100
+Ice Hammer,ice,physical,10,100,90
+High Horsepower,ground,physical,10,95,95
+Solar Blade,grass,physical,10,125,100
+Leafage,grass,physical,40,40,100
+Throat Chop,dark,physical,15,80,100
+Pollen Puff,bug,special,15,90,100
+Anchor Shot,steel,physical,20,80,100
+Lunge,bug,physical,15,80,100
+Fire Lash,fire,physical,15,80,100
+Power Trip,dark,physical,10,20,100
+Burn Up,fire,special,5,130,100
+Revelation Dance,normal,special,15,90,100
+Core Enforcer,dragon,special,10,100,100
+Trop Kick,grass,physical,15,70,100
+Beak Blast,flying,physical,15,100,100
+Clanging Scales,dragon,special,5,110,100
+Dragon Hammer,dragon,physical,15,90,100
+Brutal Swing,dark,physical,20,60,100
+Shell Trap,fire,special,5,150,100
+Fleur Cannon,fairy,special,5,130,90
+Psychic Fangs,psychic,physical,10,85,100
+Stomping Tantrum,ground,physical,10,75,100
+Shadow Bone,ghost,physical,10,85,100
+Accelerock,rock,physical,20,40,100
+Liquidation,water,physical,10,85,100
+Prismatic Laser,psychic,special,10,160,100
+Spectral Thief,ghost,physical,10,90,100
+Sunsteel Strike,steel,physical,5,100,100
+Moongeist Beam,ghost,special,5,100,100
+Zing Zap,electric,physical,10,80,100
+Multi-Attack,normal,physical,10,90,100
+Mind Blown,fire,special,5,150,100
+Plasma Fists,electric,physical,15,100,100
+Photon Geyser,psychic,special,5,100,100
