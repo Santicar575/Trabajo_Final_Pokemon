@@ -20,16 +20,61 @@ def iniciar_poblacion(size_equipos,cant_pokemons,population_size):
     return [random_adn(size_equipos,cant_pokemons) for _ in range(population_size)]
 
 def leer_datos():
+    """ 
+    Crea tres diccionarios con los datos de los movimientos, pokemons y la tabla de efectividad
+
+    Returns:
+    moves_dict: Diccionario con los movimientos
+    pokemon_dict: Diccionario con los pokemons
+    dic_effectiveness_chart: key: tipo1, value: diccionario con la efectividad de cada tipo, donde el diccionario tiene como key el tipo2 y como value la efectividad en float
+    """ 
     moves_dict = {}
     pokemon_dict = {}
-    effectiveness_dict = {}
-    with open("Trabajo_Final_Pokemon/data/moves.csv") as f:
-        f.readline()
-        lines = f.readlines()
-        for line in lines:
-            line = line.split(",")
-            moves_dict[line[0]] = {"type": line[1], "category": line[2], "pp": int(line[3]),"power":int(line[4]), "accuracy": int(line[5])}
-    return moves_dict,pokemon_dict,effectiveness_dict
+    dic_effectiveness_chart = {}
+    with open ("data/moves.csv")as file: 
+        indexs = ((file.readline()).strip()).split(',')
+        lines = file.readlines()
+        for line in lines: 
+            line = line.strip().split(',')
+            dic_temp = {}    
+            for n_index,index in enumerate(indexs): 
+                if n_index !=0: 
+                    try : 
+                       dic_temp[index]= float(line[n_index])
+                    except: 
+                        dic_temp[index]= line[n_index]     
+              
+            moves_dict[line[0]] = dic_temp
+
+    with open("data/effectiveness_chart.csv") as file: 
+        indexs = ((file.readline()).strip()).split(',')
+        lines = file.readlines()
+        for line in lines: 
+            line = line.strip().split(',')
+            dic_temp = {}    
+            for n_index,index in enumerate(indexs): 
+                if n_index !=0: 
+                    dic_temp[index]= float(line[n_index])
+            dic_effectiveness_chart[line[0]]= dic_temp
+        
+    with open("data/pokemons.csv") as file: 
+        indexs= (file.readline().strip()).split(",")
+        lines = file.readlines()
+        for line in lines: 
+            line = line.strip().split(',')
+            dic_temp = {}    
+            for n_index,index in enumerate(indexs): 
+                if n_index !=0: 
+                    if index == "moves": 
+                        var_temp = line[n_index].split(";")
+                        dic_temp[index] = var_temp
+                    else: 
+                        try : 
+                            dic_temp[index]= float(line[n_index])
+                        except:
+                            dic_temp[index]= line[n_index]
+            pokemon_dict[int(line[0])] = dic_temp
+    return moves_dict,pokemon_dict,dic_effectiveness_chart
 
 def fitness(adn,name,moves_dict,pokemon_dict,effectiveness_dict,cant_batallas,cant_pokemons)->int:
     pokemons = [Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(len(adn)-2)] #Creo los pokemons a partir del adn (sin tomar el ultimo elemento del adn ya que es el pokemon starter)
