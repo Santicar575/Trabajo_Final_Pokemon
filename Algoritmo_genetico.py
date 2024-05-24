@@ -31,7 +31,7 @@ def leer_datos():
     moves_dict = {}
     pokemon_dict = {}
     dic_effectiveness_chart = {}
-    with open ("data/moves.csv")as file: 
+    with open ("Trabajo_Final_Pokemon/data/moves.csv")as file: 
         indexs = ((file.readline()).strip()).split(',')
         lines = file.readlines()
         for line in lines: 
@@ -46,7 +46,7 @@ def leer_datos():
               
             moves_dict[line[0]] = dic_temp
 
-    with open("data/effectiveness_chart.csv") as file: 
+    with open("Trabajo_Final_Pokemon/data/effectiveness_chart.csv") as file: 
         indexs = ((file.readline()).strip()).split(',')
         lines = file.readlines()
         for line in lines: 
@@ -57,7 +57,7 @@ def leer_datos():
                     dic_temp[index]= float(line[n_index])
             dic_effectiveness_chart[line[0]]= dic_temp
         
-    with open("data/pokemons.csv") as file: 
+    with open("Trabajo_Final_Pokemon/data/pokemons.csv") as file: 
         indexs= (file.readline().strip()).split(",")
         lines = file.readlines()
         for line in lines: 
@@ -77,12 +77,12 @@ def leer_datos():
     return moves_dict,pokemon_dict,dic_effectiveness_chart
 
 def fitness(adn,name,moves_dict,pokemon_dict,effectiveness_dict,cant_batallas,cant_pokemons)->int:
-    pokemons = [Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(len(adn)-2)] #Creo los pokemons a partir del adn (sin tomar el ultimo elemento del adn ya que es el pokemon starter)
+    pokemons = [Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(len(adn)-1)] #Creo los pokemons a partir del adn (sin tomar el ultimo elemento del adn ya que es el pokemon starter)
     team = Team(name,pokemons,adn[-1])
     batallas_ganadas = 0
     for i in range(cant_batallas):
         adn_aleatorio = random_adn(len(adn),cant_pokemons)
-        pokemons_aleatorios = [Pokemon.from_dict(adn[i],pokemon_dict[adn[i]]) for i in range(len(adn)-2)]
+        pokemons_aleatorios = [Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(len(adn)-1)]
         enemy_team = Team("Enemy_team",pokemons_aleatorios,adn_aleatorio[-1])
         batallas_ganadas += 1 if get_winner(team,enemy_team,effectiveness_dict) == team else 0
     
@@ -127,7 +127,7 @@ def main():
     population_size = 52
     cant_pokemons = 801
     size_equipos = 6
-    generaciones = 100
+    generaciones = 50
     crossover_rate = 0.7
     mutation_rate = 0.03
     cant_batallas = 400
@@ -135,23 +135,23 @@ def main():
     moves_dict,pokemon_dict,effectiveness_dict = leer_datos()
    
     poblacion_inicial = iniciar_poblacion(size_equipos,cant_pokemons,population_size)
-
     for generacion in range(generaciones):
-        fitness_values = [fitness(adn,moves_dict,pokemon_dict,effectiveness_dict,cant_batallas,cant_pokemons) for adn in poblacion_inicial]
+        fitness_values = [fitness(adn,"Team_"+str(num),moves_dict,pokemon_dict,effectiveness_dict,cant_batallas,cant_pokemons) for num,adn in enumerate(poblacion_inicial)]
         seleccionados = seleccion_por_ruleta(poblacion_inicial,fitness_values)
         nueva_poblacion = []
         for i in range(population_size//2):
-            res1,res2 = crossover(seleccionados[i],seleccionados[i+1],crossover_rate)
-            nueva_poblacion.extend([mutate(res1,mutation_rate),mutate(res2,mutation_rate)])
+            res1,res2 = crossover(seleccionados[i-1],seleccionados[i],crossover_rate)
+            nueva_poblacion.extend([mutate(res1,mutation_rate,cant_pokemons),mutate(res2,mutation_rate,cant_pokemons)])
         poblacion_inicial = nueva_poblacion
-        
-def pruebas():
-    adn = random_adn(6,801)
-    print(adn)
-    adn = mutate(adn,0.03,801)
-    print(adn)
-
+    fitness_values = [fitness(adn,"Team_"+str(num),moves_dict,pokemon_dict,effectiveness_dict,cant_batallas,cant_pokemons) for num,adn in enumerate(poblacion_inicial)]
+    with open("Prueva.csv","w") as f:
+        f.writelines("Aptitud,Equipo\n")
+        for num,adn in enumerate(poblacion_inicial):
+            team = []
+            for i in range(len(adn)-1):
+                team.append(pokemon_dict[adn[i]])
+            f.writelines(f"{num},{team}\n")
+    
 
 if __name__ == "__main__":
-    pruebas()
-    #main()
+    main()
