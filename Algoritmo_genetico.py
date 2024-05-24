@@ -11,6 +11,7 @@ def random_adn(size_equipo,cant_pokemons):
             if pokemon not in adn:
                 adn.append(pokemon)
                 break
+    adn.append(random.randint(0,5)) #Se elige que pokemon sale primero de forma aleatoria
     return adn
 
 def iniciar_poblacion(size_equipos,cant_pokemons,population_size):
@@ -18,13 +19,15 @@ def iniciar_poblacion(size_equipos,cant_pokemons,population_size):
 
 def leer_datos():
     moves_dict = {}
+    pokemon_dict = {}
+    effectiveness_dict = {}
     with open("Trabajo_Final_Pokemon/data/moves.csv") as f:
         f.readline()
         lines = f.readlines()
         for line in lines:
             line = line.split(",")
             moves_dict[line[0]] = {"type": line[1], "category": line[2], "pp": int(line[3]),"power":int(line[4]), "accuracy": int(line[5])}
-    return moves_dict
+    return moves_dict,pokemon_dict,effectiveness_dict
 
 def fitness()->int:
     pass
@@ -46,10 +49,10 @@ def main():
     crossover_rate = 0.7
     mutation_rate = 0.03
 
-    pokemon_df = pd.read_csv("Trabajo_Final_Pokemon/data/pokemons.csv")
-    pokemon_df["moves"] = pokemon_df["moves"].apply(lambda x: str(x).split(";"))
-    pokemon_dict = pokemon_df.to_dict(orient="records")
-    moves_dict = leer_datos()
+    # pokemon_df = pd.read_csv("Trabajo_Final_Pokemon/data/pokemons.csv")
+    # pokemon_df["moves"] = pokemon_df["moves"].apply(lambda x: str(x).split(";"))
+    # pokemon_dict = pokemon_df.to_dict(orient="records")
+    moves_dict,pokemon_dict,effectiveness_dict = leer_datos()
    
     poblacion_inicial = iniciar_poblacion(size_equipos,cant_pokemons,population_size)
 
