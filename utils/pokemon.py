@@ -67,7 +67,7 @@ class Pokemon:
         self.__filter_moves__()
         
     @staticmethod
-    def from_dict(data: dict[str,str, str|int|float|bool|None], moves_data: dict[str, dict[str, str|int]]):
+    def from_dict(pokedex_number,data: dict[str, str|int|float|bool|None], moves_data: dict[str, dict[str, str|int]]):
         """
         Creates a Pokemon object from a dictionary.
 
@@ -108,7 +108,7 @@ class Pokemon:
         """
 
         return Pokemon(
-            data['pokedex_number'],
+            pokedex_number,
             data['name'],
             data['type1'],
             data['type2'],
