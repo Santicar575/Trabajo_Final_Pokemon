@@ -1,4 +1,3 @@
-import pandas as pd
 from multiprocessing import Pool
 from utils.pokemon import *
 from utils.team import *
@@ -23,7 +22,7 @@ def random_adn(size_equipo,cant_pokemons):
 def iniciar_poblacion(size_equipos,cant_pokemons,population_size):
     return [random_adn(size_equipos,cant_pokemons) for _ in range(population_size)]
 
-def leer_datos():
+def leer_datos(legendary):
     """ 
     Crea tres diccionarios con los datos de los movimientos, pokemons y la tabla de efectividad
 
@@ -35,6 +34,7 @@ def leer_datos():
     moves_dict = {}
     pokemon_dict = {}
     dic_effectiveness_chart = {}
+
     with open ("data/moves.csv")as file: 
         indexs = ((file.readline()).strip()).split(',')
         lines = file.readlines()
@@ -66,26 +66,32 @@ def leer_datos():
         lines = file.readlines()
         for line in lines: 
             line = line.strip().split(',')
-            dic_temp = {}    
-            for n_index,index in enumerate(indexs): 
-                if n_index !=0: 
-                    if index == "moves": 
-                        var_temp = line[n_index].split(";")
-                        dic_temp[index] = var_temp
-                    else: 
-                        try : 
-                            dic_temp[index]= float(line[n_index])
-                        except:
-                            dic_temp[index]= line[n_index]
+            dic_temp = {}
+            if line[13] == "1" and not legendary:
+                continue 
+            else:
+                for n_index,index in enumerate(indexs):
+                    if n_index !=0: 
+                        if index == "moves": 
+                            var_temp = line[n_index].split(";")
+                            dic_temp[index] = var_temp
+                        else: 
+                            try : 
+                                dic_temp[index]= float(line[n_index])
+                            except:
+                                dic_temp[index]= line[n_index]
             pokemon_dict[int(line[0])] = dic_temp
+    
     return moves_dict,pokemon_dict,dic_effectiveness_chart
 
 
 def fitness(adn,moves_dict,pokemon_dict,effectiveness_dict,cant_batallas,cant_pokemons)->int:
-    pokemons = [Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(len(adn)-1)] #Creo los pokemons a partir del adn (sin tomar el ultimo elemento del adn ya que es el pokemon starter)
-    team = Team("Team",pokemons,adn[-1])
     batallas_ganadas = 0
 
+    #Transforma el adn en objetos de tipo pokemon y luego crea el equipo
+    pokemons = [Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(len(adn)-1)] #Crea los pokemons a partir del adn (sin tomar el ultimo elemento del adn ya que es el pokemon starter)
+    team = Team("Team",pokemons,adn[-1])
+    
     # Pre-genera los equipos aleatorios
     adns_aleatorios = [random_adn(len(adn)-1, cant_pokemons) for _ in range(cant_batallas)]
     equipos_aleatorios = [[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(len(adn)-1)] for adn in adns_aleatorios]
@@ -101,7 +107,7 @@ def parallel_fitness_helper(adn, moves_dict, pokemon_dict, effectiveness_dict, c
 def seleccion_por_ruleta(poblacion,fitness_values)->list[list]:
     total_aptitud = sum(fitness_values)
     seleccionados = []
-    for _ in range(len(poblacion) // 2):
+    for _ in range((len(poblacion) // 2) + 1):
         pick = random.uniform(0,total_aptitud)
         current = 0
         for adn,fit in zip(poblacion,fitness_values):
@@ -118,7 +124,7 @@ def crossover(parent1,parent2,crossover_rate)->tuple[list,list]:
             child1 = [parent1[i] if parent1_chance >= random.random() else parent2[i] for i in range(len(parent1))]
             child2 = [parent1[i] if parent1_chance >= random.random() else parent2[i] for i in range(len(parent1))]
             if len(child1[:6]) == len(set(child1[:6])) and len(child2[:6]) == len(set(child2[:6])):
-                break #Si los hijos tienen un pokemon resultado no sale del bucle y se vuelven a generar hasta que tengan todos pokemons ditintos
+                break #Si los hijos tienen un pokemon repetido no sale del bucle y se vuelven a generar hasta que tengan todos pokemons ditintos
         return child1,child2
     else:
         return parent1,parent2
@@ -129,11 +135,11 @@ def mutate(adn,mutation_rate,cant_pokemons)->list[int]:
             while True: #Sale del bucle si el pokemon a mutar no se encuentra en el equipo, de lo contrario se repite.
                 mutacion = random.randint(1,cant_pokemons)
                 new_pokemon = adn[i] + mutacion if adn[i] + mutacion <= cant_pokemons else adn[i] + mutacion - cant_pokemons
-                if new_pokemon not in adn:
+                if new_pokemon not in adn[:6]:
                     adn[i] = new_pokemon
                     break
 
-    if mutation_rate >= random.random():
+    if mutation_rate >= random.random(): #Hay una probabilidad de mutar el pokemon que sale primero en la batalla
         mutacion = random.randint(0,5)
         adn[-1] += mutacion
         adn[-1] = adn[-1] - 5 if adn[-1] > 5 else adn[-1]
@@ -142,43 +148,75 @@ def mutate(adn,mutation_rate,cant_pokemons)->list[int]:
 
 def main():
     population_size = 50
-    cant_pokemons = 801
     size_equipos = 6
-    generaciones = 10
+    generaciones = 50
     crossover_rate = 0.9
     mutation_rate = 0.03
-    cant_batallas = 5
+    cant_batallas = 400
+    chunksize = population_size // os.cpu_count() #Se divide la cantidad de tareas que va a realizar cada nucleo dependiendo de la cantidad de nucleos que tenga la pc
+    chunksize = chunksize if chunksize > 0 else 1
 
-    moves_dict,pokemon_dict,effectiveness_dict = leer_datos()
+    #Se leen los datos de los archivos csv y se guardan en tres diccionarios
+    legendary = True
+    moves_dict,pokemon_dict,effectiveness_dict = leer_datos(legendary)
+    cant_pokemons = len(pokemon_dict)
    
+    #Se inicia la poblacion inicial con equipos aleatorios
     poblacion_inicial = iniciar_poblacion(size_equipos,cant_pokemons,population_size)
-    with Pool(os.cpu_count()) as pool:
+    datos = []
+    with Pool(os.cpu_count()) as pool: #Se crea un pool con la cantidad de nucleos que tenga la pc del usuario
+        #Se itera segun la cantidad de generaciones a realizar
         for generacion in range(generaciones):
             print(f"Generacion {generacion}:")
             ini = time.time()
+            #Se crea una funcion parcial con los argumentos necesarios para luego usar el multiprocesamiento
             partial_fitness = partial(parallel_fitness_helper, moves_dict=moves_dict, 
                                   pokemon_dict=pokemon_dict, effectiveness_dict=effectiveness_dict, 
                                   cant_batallas=cant_batallas, cant_pokemons=cant_pokemons)
-            fitness_values = list(pool.imap(partial_fitness, poblacion_inicial,chunksize=10))
+            #Se usa la pool para aplicar la funcion parcial a cada adn de la poblacion
+            fitness_values = list(pool.imap(partial_fitness, poblacion_inicial,chunksize=chunksize)) #La variable "chunksize" especifica la cantidad de tareas que va a realizar cada nucleo a la vez
             
-            #fitness_values = pool.map( lambda adn: fitness(adn,moves_dict,pokemon_dict,effectiveness_dict,cant_batallas,cant_pokemons),poblacion_inicial)
+            datos.append(zip(fitness_values,poblacion_inicial))
+            #Se seleccionan los individuos de forma aleatoria (aquellos con mas aptitud tienen mas chances de ser elegidos).
             seleccionados = seleccion_por_ruleta(poblacion_inicial,fitness_values)
             nueva_poblacion = []
-            for i in range(population_size//2):
-                res1,res2 = crossover(seleccionados[i-1],seleccionados[i],crossover_rate)
+
+            for _ in range(population_size//2):
+                #se toman dos padres de forma aleatoria de la lista de seleccionados
+                parent1 = seleccionados.pop(random.randint(0,len(seleccionados)-1))
+                parent2 = seleccionados[random.randint(0,len(seleccionados)-1)]
+
+                #Se cruzan los dos padres 
+                res1,res2 = crossover(parent1,parent2,crossover_rate)
+
+                #Se agrega a la nueva poblacion los dos resultados del cruze despues de haber pasado por la funcion de mutacion
                 nueva_poblacion.extend([mutate(res1,mutation_rate,cant_pokemons),mutate(res2,mutation_rate,cant_pokemons)])
+            
+            #La poblacion inicial pasa a ser la nueva poblacion
             poblacion_inicial = nueva_poblacion
             fin=time.time()
             print(fin-ini)
     
     fitness_values = [fitness(adn,moves_dict,pokemon_dict,effectiveness_dict,cant_batallas,cant_pokemons) for adn in poblacion_inicial]
-    with open("Prueva.csv","w") as f:
-        f.writelines("Aptitud,Equipo\n")
-        for fit,adn in zip(fitness_values,poblacion_inicial):
-            team = []
-            for i in range(len(adn)-1):
-                team.append(pokemon_dict[adn[i]]["name"])
-            f.writelines(f"{fit},{team}\n")
+    datos.append(zip(fitness_values,poblacion_inicial))
+
+    with open("epochs.csv","w") as epochs:
+        with open("best_teams.csv","w") as best_teams:
+            best_teams.writelines("epoch,aptitude,team_name,starter,pokemon_1,pokemon_2,pokemon_3,pokemon_4,pokemon_5,pokemon_6\n")
+            cant_equipos = [i for i in range(population_size*(generaciones+1))]
+            for num_generacion,generacion in enumerate(datos):
+                temp_dict = {}
+                for fit,adn in generacion:
+                    for pokemon in adn[:size_equipos]:
+                        if pokemon not in temp_dict.keys():
+                            temp_dict[pokemon] = 1
+                        else:
+                            temp_dict[pokemon] += 1
+                    pokemons = [pokemon_dict[pokemon]["name"] for pokemon in adn[:size_equipos]]
+                    best_teams.writelines(f"{num_generacion},{fit},Team {cant_equipos.pop(0)},{adn[-1]},{','.join(pokemons)}\n")
+
+                cant_pokemons = [",".join([pokemon_dict[pokemon]["name"],str(cant)]) for pokemon,cant in temp_dict.items()]
+                epochs.writelines(f"{num_generacion},{len(temp_dict.keys())},{','.join(cant_pokemons)}\n")
 
 if __name__ == "__main__":
     main()
