@@ -16,7 +16,7 @@ class Team:
         if len(pokemons) > 6:
             raise ValueError('A team can have at most 6 pokemons')
         if len(set(pokemon.name for pokemon in pokemons)) < len(pokemons):
-            pass#raise ValueError('A team cannot have two pokemons with the same name')
+            raise ValueError('A team cannot have two pokemons with the same name')
         self.name = name
         self.pokemons = [copy.deepcopy(pokemon) for pokemon in pokemons]
         self.current_pokemon_index = starter
