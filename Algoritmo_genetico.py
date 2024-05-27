@@ -86,7 +86,7 @@ def leer_datos():
     return moves_dict,pokemon_dict,dic_effectiveness_chart
 
 
-def fitness(adn,moves_dict,pokemon_dict,effectiveness_dict,equipos_aleatorios)->int:
+def fitness(adn,moves_dict,pokemon_dict,effectiveness_dict,equipos_aleatorios,adns_aleatorios)->int:
     batallas_ganadas = 0
 
     #Transforma el adn en objetos de tipo pokemon y luego crea el equipo
@@ -98,8 +98,8 @@ def fitness(adn,moves_dict,pokemon_dict,effectiveness_dict,equipos_aleatorios)->
     batallas_ganadas = np.sum(resultados)
     return batallas_ganadas
 
-def parallel_fitness_helper(adn, moves_dict, pokemon_dict, effectiveness_dict,equipos_aleatorios):
-    return fitness(adn, moves_dict, pokemon_dict, effectiveness_dict,equipos_aleatorios)
+def parallel_fitness_helper(adn, moves_dict, pokemon_dict, effectiveness_dict,equipos_aleatorios,adns_aleatorios):
+    return fitness(adn, moves_dict, pokemon_dict, effectiveness_dict,equipos_aleatorios,adns_aleatorios)
 
 def seleccion_por_ruleta(poblacion,fitness_values)->list[list]:
     total_aptitud = sum(fitness_values)
@@ -177,7 +177,7 @@ def main():
             #Se crea una funcion parcial con los argumentos necesarios para luego usar el multiprocesamiento
             partial_fitness = partial(parallel_fitness_helper, moves_dict=moves_dict, 
                                     pokemon_dict=pokemon_dict, effectiveness_dict=effectiveness_dict,
-                                    equipos_aleatorios = equipos_aleatorios)
+                                    equipos_aleatorios = equipos_aleatorios,adns_aleatorios = adns_aleatorios)
             
             #Se usa la pool para aplicar la funcion parcial a cada adn de la poblacion
             fitness_values = list(pool.imap(partial_fitness, poblacion_inicial,chunksize=chunksize)) #La variable "chunksize" especifica la cantidad de tareas que va a realizar cada nucleo a la vez
@@ -203,6 +203,8 @@ def main():
             fin=time.time()
             print(fin-ini)
     
+    adns_aleatorios = [random_adn(size_equipos,cant_pokemons,legendary,pokemon_dict) for _ in range(cant_batallas)]
+    equipos_aleatorios = [[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in adns_aleatorios]
     fitness_values = [fitness(adn,moves_dict,pokemon_dict,effectiveness_dict,cant_batallas,cant_pokemons) for adn in poblacion_inicial]
     datos.append(zip(fitness_values,poblacion_inicial))
 
