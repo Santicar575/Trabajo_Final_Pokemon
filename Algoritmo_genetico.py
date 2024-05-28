@@ -145,6 +145,22 @@ def mutate(adn,mutation_rate,cant_pokemons,legendary,pokemon_dict)->list[int]:
         adn[-1] = adn[-1] - 5 if adn[-1] > 5 else adn[-1]
     
     return adn
+def quicksort(arr,parametro):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2][parametro]
+    left = []
+    middle = []
+    right = []
+    for x in arr:
+        if x[parametro] < pivot:
+            left.append(x)
+        elif x[parametro] == pivot:
+            middle.append(x)
+        else:
+            right.append(x)
+    return quicksort(left) + middle + quicksort(right)
+
 
 def main():
     population_size = 50
@@ -214,8 +230,7 @@ def main():
             cant_equipos = [i for i in range(population_size*(generaciones+1))]
             for num_generacion,generacion in enumerate(datos):
                 temp_dict = {}
-                #ordenar generacion por aptitud
-
+                generacion = quicksort(generacion,0)#el cero representa la posicion por se ordena
                 for fit,adn in generacion:
                     for pokemon in adn[:size_equipos]:
                         if pokemon not in temp_dict.keys():
@@ -226,7 +241,7 @@ def main():
                     best_teams.writelines(f"{num_generacion},{fit},Team {cant_equipos.pop(0)},{adn[-1]},{','.join(pokemons)}\n")
 
                 cant_pokemons = [",".join([pokemon_dict[pokemon]["name"],str(cant)]) for pokemon,cant in temp_dict.items()]
-                #ordenar por la cantidad de pokemons (decreciente):
+                cant_pokemons = quicksort(generacion,1)
                 
                 epochs.writelines(f"{num_generacion},{len(temp_dict.keys())},{','.join(cant_pokemons)}\n")
 
