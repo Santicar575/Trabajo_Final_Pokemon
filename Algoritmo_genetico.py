@@ -165,11 +165,11 @@ def quicksort(arr,parametro):
 
 def main():
     population_size = 50
-    size_equipos = 6
-    generaciones = 2
+    size_equipos = 6 
+    generaciones = 50
     crossover_rate = 0.9
     mutation_rate = 0.03
-    cant_batallas = 10
+    cant_batallas = 400
     chunksize = population_size // os.cpu_count() #Se divide la cantidad de tareas que va a realizar cada nucleo dependiendo de la cantidad de nucleos que tenga la pc
     chunksize = chunksize if chunksize > 0 else 1
     legendary = False
@@ -231,10 +231,8 @@ def main():
             cant_equipos = [i for i in range(population_size*(generaciones+1))]
             for num_generacion,generacion in enumerate(datos):
                 generacion = list(generacion)
-                print(generacion)
                 temp_dict = {}
                 generacion = quicksort(generacion,0)#el cero representa la posicion por se ordena
-                print(generacion)
                 for fit,adn in generacion:
                     for pokemon in adn[:size_equipos]:
                         if pokemon not in temp_dict.keys():
@@ -249,7 +247,6 @@ def main():
                 cant_pokemons = [[elem[0],int(elem[1])]for elem in cant_pokemons]
                 cant_pokemons = quicksort(cant_pokemons,1)
                 cant_pokemons = [f'{pokemon[0]},{pokemon[1]}' for pokemon in cant_pokemons]
-               
                 epochs.writelines(f"{num_generacion},{len(temp_dict.keys())},{','.join(cant_pokemons)}\n")
 
 if __name__ == "__main__":
