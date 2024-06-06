@@ -101,17 +101,18 @@ def fitness(adn,moves_dict,pokemon_dict,effectiveness_dict,equipos_aleatorios,ad
 def parallel_fitness_helper(adn, moves_dict, pokemon_dict, effectiveness_dict,equipos_aleatorios,adns_aleatorios):
     return fitness(adn, moves_dict, pokemon_dict, effectiveness_dict,equipos_aleatorios,adns_aleatorios)
 
-def seleccion_por_ruleta(poblacion,fitness_values)->list[list]:
-    total_aptitud = sum(fitness_values)
-    seleccionados = []
-    for _ in range((len(poblacion) // 2) + 1):
-        pick = random.uniform(0,total_aptitud)
-        current = 0
-        for adn,fit in zip(poblacion,fitness_values):
-            current += fit
-            if current > pick:
-                seleccionados.append(adn)
-                break
+def seleccion(poblacion,fitness_values)->list[list]:
+    seleccionados = random.choices(poblacion, fitness_values, k = len(poblacion)//2 + 1)
+    # total_aptitud = sum(fitness_values)
+    # seleccionados = []
+    # for _ in range((len(poblacion) // 2) + 1):
+    #     pick = random.uniform(0,total_aptitud)
+    #     current = 0
+    #     for adn,fit in zip(poblacion,fitness_values):
+    #         current += fit
+    #         if current > pick:
+    #             seleccionados.append(adn)
+    #             break
     return seleccionados
 
 def crossover(parent1,parent2,crossover_rate)->tuple[list,list]:
@@ -169,7 +170,7 @@ def main():
     generaciones = 50
     crossover_rate = 0.9
     mutation_rate = 0.03
-    cant_batallas = 400
+    cant_batallas = 100
     chunksize = population_size // os.cpu_count() #Se divide la cantidad de tareas que va a realizar cada nucleo dependiendo de la cantidad de nucleos que tenga la pc
     chunksize = chunksize if chunksize > 0 else 1
     legendary = False
@@ -201,7 +202,7 @@ def main():
             
             datos.append(zip(fitness_values,poblacion_inicial))
             #Se seleccionan los individuos de forma aleatoria (aquellos con mas aptitud tienen mas chances de ser elegidos).
-            seleccionados = seleccion_por_ruleta(poblacion_inicial,fitness_values)
+            seleccionados = seleccion(poblacion_inicial,fitness_values)
             nueva_poblacion = []
 
             for _ in range(population_size//2):
