@@ -1,5 +1,4 @@
 epoch,aptitude,team_name,starter,pokemon_1,pokemon_2,pokemon_3,pokemon_4,pokemon_5,pokemon_6
-<<<<<<< HEAD
 0,382,Team 0,4,Furfrou,Scraggy,Porygon-Z,Audino,Alakazam,Alomomola
 0,382,Team 1,5,Blastoise,Cranidos,Haunter,Pidgeot,Venusaur,Qwilfish
 0,378,Team 2,2,Gardevoir,Seel,Salamence,Rowlet,Chespin,Dewott
@@ -5101,4 +5100,3 @@ epoch,aptitude,team_name,starter,pokemon_1,pokemon_2,pokemon_3,pokemon_4,pokemon
 50,297,Team 2547,3,Lilligant,Pancham,Clamperl,Marshtomp,Beheeyem,Garchomp
 50,170,Team 2548,4,Nidoking,Oddish,Nuzleaf,Totodile,Stantler,Mankey
 50,169,Team 2549,4,Nidoking,Pancham,Swadloon,Marshtomp,Stantler,Mankey
->>>>>>> d884f5f16ca8c12835d95df7a397fc54670c7806
