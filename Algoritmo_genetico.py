@@ -85,7 +85,6 @@ def leer_datos():
     
     return moves_dict,pokemon_dict,dic_effectiveness_chart
 
-
 def fitness(adn,moves_dict,pokemon_dict,effectiveness_dict,equipos_aleatorios,adns_aleatorios)->int:
     batallas_ganadas = 0
 
@@ -102,17 +101,17 @@ def parallel_fitness_helper(adn, moves_dict, pokemon_dict, effectiveness_dict,eq
     return fitness(adn, moves_dict, pokemon_dict, effectiveness_dict,equipos_aleatorios,adns_aleatorios)
 
 def seleccion(poblacion,fitness_values)->list[list]:
-    seleccionados = random.choices(poblacion, fitness_values, k = len(poblacion)//2 + 1)
-    # total_aptitud = sum(fitness_values)
-    # seleccionados = []
-    # for _ in range((len(poblacion) // 2) + 1):
-    #     pick = random.uniform(0,total_aptitud)
-    #     current = 0
-    #     for adn,fit in zip(poblacion,fitness_values):
-    #         current += fit
-    #         if current > pick:
-    #             seleccionados.append(adn)
-    #             break
+    #seleccionados = random.choices(poblacion, fitness_values, k = len(poblacion)//2 + 1)
+    total_aptitud = sum(fitness_values)
+    seleccionados = []
+    for _ in range((len(poblacion) // 2) + 1):
+        pick = random.uniform(0,total_aptitud)
+        current = 0
+        for adn,fit in zip(poblacion,fitness_values):
+            current += fit
+            if current > pick:
+                seleccionados.append(adn)
+                break
     return seleccionados
 
 def crossover(parent1,parent2,crossover_rate)->tuple[list,list]:
@@ -128,7 +127,7 @@ def crossover(parent1,parent2,crossover_rate)->tuple[list,list]:
         return parent1,parent2
 
 def mutate(adn,mutation_rate,cant_pokemons,legendary,pokemon_dict)->list[int]:
-    for i in range(len(adn)-2): #Se mutan todos los pokemons excluyendo al indice del pokemon que sale primero a la batalla
+    for i in range(len(adn)-1): #Se mutan todos los pokemons excluyendo al indice del pokemon que sale primero a la batalla
         if mutation_rate >= random.random():
             while True: #Sale del bucle si el pokemon a mutar no se encuentra en el equipo, de lo contrario se repite.
                 mutacion = random.randint(1,cant_pokemons)
@@ -147,7 +146,6 @@ def mutate(adn,mutation_rate,cant_pokemons,legendary,pokemon_dict)->list[int]:
     
     return adn
 def quicksort(arr,parametro):
-    
     if len(arr) <= 1:
         return arr
     pivot = arr[len(arr) // 2][parametro]
@@ -163,14 +161,13 @@ def quicksort(arr,parametro):
             right.append(x)
     return quicksort(left,parametro) + middle + quicksort(right,parametro)
 
-
 def main():
     population_size = 50
     size_equipos = 6 
     generaciones = 50
     crossover_rate = 0.9
     mutation_rate = 0.03
-    cant_batallas = 100
+    cant_batallas = 400
     chunksize = population_size // os.cpu_count() #Se divide la cantidad de tareas que va a realizar cada nucleo dependiendo de la cantidad de nucleos que tenga la pc
     chunksize = chunksize if chunksize > 0 else 1
     legendary = False
@@ -207,7 +204,7 @@ def main():
 
             for _ in range(population_size//2):
                 #se toman dos padres de forma aleatoria de la lista de seleccionados
-                parent1 = seleccionados.pop(random.randint(0,len(seleccionados)-1))
+                parent1 = seleccionados[(random.randint(0,len(seleccionados)-1))]
                 parent2 = seleccionados[random.randint(0,len(seleccionados)-1)]
 
                 #Se cruzan los dos padres 
