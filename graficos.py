@@ -82,8 +82,12 @@ def fitness_evolution(): #grafico 2
     plt.title("Fitness Evolution")
     plt.show()
     
-    
-
+def get_best_team(population_size):
+    with open("best_teams.csv") as f:
+        #f.readline()
+        lines = f.readlines()
+        best_team = lines[:-1*(population_size+1):-1][-1].strip().split(",")
+    return best_team
 
 def pokemons_in_last_generation(): #grafico 3
     epochs = leer_epochs() 
@@ -130,7 +134,7 @@ def show_best_team(best_team:list[str],pokemon_dict):
     types = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy']
     types_colors = ['#A8A77A', '#EE8130', '#6390F0', '#F7D02C', '#7AC74C', '#96D9D6', '#C22E28', '#A33EA1', '#E2BF65', '#A98FF3', '#F95587', '#A6B91A', '#B6A136', '#735797', '#6F35FC', '#705746', '#B7B7CE', '#D685AD']
     team_name = best_team.pop(0)
-    starter = best_team.pop(0)
+    starter = int(best_team.pop(0))
     plt.suptitle(f"Best team: {team_name}", fontsize=10)
     for i,pokemon in enumerate(best_team):
         pokedex_number = str(pokemon_dict[pokemon])
@@ -156,8 +160,9 @@ def show_best_team(best_team:list[str],pokemon_dict):
     plt.show()
 
 def main():
-    print(get_best_team())
-    show_best_team(get_best_team()[2:],pokedex_number_dict())
+    population_size = 50
+    print(get_best_team(population_size))
+    show_best_team(get_best_team(population_size)[2:],pokedex_number_dict())
     pass
 
 if __name__ == "__main__":
