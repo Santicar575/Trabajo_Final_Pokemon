@@ -97,7 +97,7 @@ def Cant_Pokemons_Epoca_Por_Tipo():
     dic_pokemon = dic_Pokemons()
     types = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy']
     types_colors = ['#A8A77A', '#EE8130', '#6390F0', '#F7D02C', '#7AC74C', '#96D9D6', '#C22E28', '#A33EA1', '#E2BF65', '#A98FF3', '#F95587', '#A6B91A', '#B6A136', '#735797', '#6F35FC', '#705746', '#B7B7CE', '#D685AD']
-    equipos,_ = leer_datos_equipos()
+    equipos = leer_datos_equipos()
     cant_tipos = {llave: {tipo: 0 for tipo in types} for llave in equipos.keys()}
     x, y = [int(epoca) for epoca in equipos.keys()], {}
     for epoca in x: #Para cada epoca (50 veces)
