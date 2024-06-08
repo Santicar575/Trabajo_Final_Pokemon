@@ -118,5 +118,4 @@ def Cant_Pokemons_Epoca_Por_Tipo():
     plt.legend(loc="upper right")
     plt.show()
 
-fitness_evolution()
 Cant_Pokemons_Epoca_Por_Tipo()
