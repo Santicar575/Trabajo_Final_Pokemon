@@ -15,18 +15,16 @@ def leer_epochs():
 
 def leer_datos_equipos():
     equipos: dict = {}
-    fitness =  []
     with open("best_teams.csv") as csv:
         lines = csv.readlines()
         for line in lines[1:]:
             line = line.strip().split(",")
             equipo = line[4:]
-            fitness.append(line[2])
             if line[0] in equipos.keys(): 
                 equipos[line[0]] += [equipo]
             else:
                 equipos[line[0]] = [equipo]
-    return equipos,fitness 
+    return equipos 
 
 def dic_Pokemons():
     pokemon_dict = {}
@@ -52,27 +50,32 @@ def diversity_vs_epoch(): # grafico 1
     plt.title("Diversidad vs Epoch")
     plt.show()
 
-def fitness_evolution(): #grafico 2 
-    _,fitness = leer_datos_equipos()
-    aptitud = []
+def fitness_dic_from_csv():
+    fitnes_dic =  {}
+    with open("best_teams.csv") as csv:
+        lines = csv.readlines()
+        for line in lines[1:len(lines)]: 
+            line = line.strip().split(",")
+            if line[0] in fitnes_dic:  
+                fitnes_dic[line[0]].append(int(line[1]))
+            else:
+                fitnes_dic[line[0]]= [int(line[1])]
+    return fitnes_dic
 
-    for i  in range(len(fitness),50):
-        interval = fitness[i:i+50]
-        if interval: 
-            average = sum(interval)//2 
-            aptitud.append(average)  
-    x= []
+def fitness_evolution(): #grafico 2 
+    dic_fitness = fitness_dic_from_csv()
+    x = []
     y = []
-    for epoca,ap in enumerate(aptitud):
-        x.append(epoca)
-        y.append(ap)
+    for epoch in dic_fitness: 
+        x.append(epoch)
+        y.append(sum(dic_fitness[epoch])//50) 
     plt.plot(x,y)
-    plt.xlabel("Epoch")    
-    plt.ylabel("Diversidad")
-    plt.title("Fitness evolution through time")
+    plt.xlabel("Epoch")
+    plt.ylabel("Fitness")
+    plt.title("Fitness Evolution")
     plt.show()
     
-
+    
 
 
 def pokemons_in_last_generation(): #grafico 3
