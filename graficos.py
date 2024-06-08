@@ -35,7 +35,14 @@ def dic_Pokemons():
             pokemon_dict[line[1]] = (line[2],line[3])
     return pokemon_dict
 
-
+def pokedex_number_dict():
+    pokedex_number_dict = {}
+    with open("data/pokemons.csv") as file:
+        file.readline()
+        for line in file:
+            line = line.strip().split(",")
+            pokedex_number_dict[line[1]] = line[0]
+    return pokedex_number_dict
 
 def diversity_vs_epoch(): # grafico 1
     epochs = leer_epochs()
@@ -118,4 +125,40 @@ def Cant_Pokemons_Epoca_Por_Tipo():
     plt.legend(loc="upper right")
     plt.show()
 
-Cant_Pokemons_Epoca_Por_Tipo()
+def show_best_team(best_team:list[str],pokemon_dict):
+    dic_pokemon = dic_Pokemons()
+    types = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy']
+    types_colors = ['#A8A77A', '#EE8130', '#6390F0', '#F7D02C', '#7AC74C', '#96D9D6', '#C22E28', '#A33EA1', '#E2BF65', '#A98FF3', '#F95587', '#A6B91A', '#B6A136', '#735797', '#6F35FC', '#705746', '#B7B7CE', '#D685AD']
+    team_name = best_team.pop(0)
+    starter = best_team.pop(0)
+    plt.suptitle(f"Best team: {team_name}", fontsize=10)
+    for i,pokemon in enumerate(best_team):
+        pokedex_number = str(pokemon_dict[pokemon])
+        pokedex_number = pokedex_number.zfill(3) 
+        img = plt.imread(f"data/imgs/{pokedex_number}.png", format="png")
+        #Se crea una grilla de 2x3 subplots con la imagen de cada pokemon
+        plt.subplot(2, 3, i+1)
+        plt.imshow(img)
+        plt.axis("off")
+        plt.text(0.5, -0.1, f"{pokemon} {'(starter)'if i == starter else ''}", size=10, ha="center", transform=plt.gca().transAxes)  # Add text below each image
+        pokemon_types = [type for type in dic_pokemon[pokemon] if type in types]
+        if len(pokemon_types) == 1:
+            plt.text(0.5, -0.3, pokemon_types[0], size=8, ha="center",
+                transform=plt.gca().transAxes, 
+                bbox=dict(facecolor=types_colors[types.index(pokemon_types[0])], alpha=0.5))
+        elif len(pokemon_types) == 2:
+            plt.text(0.3, -0.3, pokemon_types[0], size=8, ha="center",
+                transform=plt.gca().transAxes, 
+                bbox=dict(facecolor=types_colors[types.index(pokemon_types[0])], alpha=0.5))
+            plt.text(0.7, -0.3, pokemon_types[1], size=8, ha="center",
+                transform=plt.gca().transAxes, 
+                bbox=dict(facecolor=types_colors[types.index(pokemon_types[1])], alpha=0.5))
+    plt.show()
+
+def main():
+    print(get_best_team())
+    show_best_team(get_best_team()[2:],pokedex_number_dict())
+    pass
+
+if __name__ == "__main__":
+    main()
