@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np 
 from Algoritmo_genetico import leer_datos
 
 def leer_epochs():
@@ -151,6 +152,9 @@ def best_team_stats(): #Grafico 6
         for subject in subjects: 
             poke_stats.append(dic_pokemones[int(dic_id[pokemon])][subject])
         stats.append(poke_stats)
+    num_vars = len(subjects)
+    angles = np.linspace(0, 2 * np.pi, num_vars, endpoint=False).tolist()
+
     
         
             
