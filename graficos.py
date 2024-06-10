@@ -44,6 +44,34 @@ def pokedex_number_dict():
             pokedex_number_dict[line[1]] = line[0]
     return pokedex_number_dict
 
+def fitness_dic_from_csv():
+    fitnes_dic =  {}
+    with open("best_teams.csv") as csv:
+        lines = csv.readlines()
+        for line in lines[1:len(lines)]: 
+            line = line.strip().split(",")
+            if line[0] in fitnes_dic:  
+                fitnes_dic[line[0]].append(int(line[1]))
+            else:
+                fitnes_dic[line[0]]= [int(line[1])]
+    return fitnes_dic
+
+def get_best_team(population_size):
+    with open("best_teams.csv") as f:
+        #f.readline()
+        lines = f.readlines()
+        best_team = lines[:-1*(population_size+1):-1][-1].strip().split(",")
+    return best_team
+
+def dic_id_pokemon(): 
+    dic= {}
+    with open("data/pokemons.csv") as csv: 
+        lines = csv.readlines() 
+    for line in lines[1:]: 
+        line = line.strip().split(',')
+        dic[line[1]] = line[0]
+    return dic
+
 def diversity_vs_epoch(): # grafico 1
     epochs = leer_epochs()
     x = []
@@ -57,17 +85,6 @@ def diversity_vs_epoch(): # grafico 1
     plt.title("Diversidad vs Epoch")
     plt.show()
 
-def fitness_dic_from_csv():
-    fitnes_dic =  {}
-    with open("best_teams.csv") as csv:
-        lines = csv.readlines()
-        for line in lines[1:len(lines)]: 
-            line = line.strip().split(",")
-            if line[0] in fitnes_dic:  
-                fitnes_dic[line[0]].append(int(line[1]))
-            else:
-                fitnes_dic[line[0]]= [int(line[1])]
-    return fitnes_dic
 
 def fitness_evolution(): #grafico 2 
     dic_fitness = fitness_dic_from_csv()
@@ -82,12 +99,6 @@ def fitness_evolution(): #grafico 2
     plt.title("Fitness Evolution")
     plt.show()
     
-def get_best_team(population_size):
-    with open("best_teams.csv") as f:
-        #f.readline()
-        lines = f.readlines()
-        best_team = lines[:-1*(population_size+1):-1][-1].strip().split(",")
-    return best_team
 
 def pokemons_in_last_generation(): #grafico 3
     epochs = leer_epochs() 
@@ -104,7 +115,7 @@ def pokemons_in_last_generation(): #grafico 3
     plt.show()
 
 
-def Cant_Pokemons_Epoca_Por_Tipo():
+def Cant_Pokemons_Epoca_Por_Tipo(): #Grafico 4 
     dic_pokemon = dic_Pokemons()
     types = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy']
     types_colors = ['#A8A77A', '#EE8130', '#6390F0', '#F7D02C', '#7AC74C', '#96D9D6', '#C22E28', '#A33EA1', '#E2BF65', '#A98FF3', '#F95587', '#A6B91A', '#B6A136', '#735797', '#6F35FC', '#705746', '#B7B7CE', '#D685AD']
@@ -128,6 +139,22 @@ def Cant_Pokemons_Epoca_Por_Tipo():
     plt.title("Pokemon Count by Type over Time")
     plt.legend(loc="upper right")
     plt.show()
+
+def best_team_stats(): #Grafico 6 
+    best_team= get_best_team(50)
+    dic_id = dic_id_pokemon()
+    _,dic_pokemones,_ = leer_datos()
+    subjects = ['hp','attack','defense','sp_attack','sp_defense','speed']
+    stats =[]
+    for pokemon in best_team[4:]:
+        poke_stats = []
+        for subject in subjects: 
+            poke_stats.append(dic_pokemones[int(dic_id[pokemon])][subject])
+        stats.append(poke_stats)
+    
+        
+            
+            
 
 def show_best_team(best_team:list[str],pokemon_dict):
     dic_pokemon = dic_Pokemons()
@@ -160,9 +187,10 @@ def show_best_team(best_team:list[str],pokemon_dict):
     plt.show()
 
 def main():
-    population_size = 50
-    print(get_best_team(population_size))
-    show_best_team(get_best_team(population_size)[2:],pokedex_number_dict())
+    best_team_stats()
+    # population_size = 50
+    # print(get_best_team(population_size))
+    # show_best_team(get_best_team(population_size)[2:],pokedex_number_dict())
     pass
 
 if __name__ == "__main__":
