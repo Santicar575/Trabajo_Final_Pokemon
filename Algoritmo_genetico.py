@@ -186,14 +186,25 @@ def cargar_datos(datos,population_size,generaciones,size_equipos,pokemon_dict):
                 cant_pokemons = [f'{pokemon[0]},{pokemon[1]}' for pokemon in cant_pokemons]
                 epochs.writelines(f"{num_generacion},{len(temp_dict.keys())},{','.join(cant_pokemons)}\n")
 
+def enemy_teams_from_csv():
+    with open("best_teams.csv") as file:
+        file.readline()
+        lines = file.readlines()
+        teams = []
+        for line in lines:
+            line = line.strip().split(",")
+            team = []
+            #teams.append(pokemons)
+        return teams
+
 def main():
     population_size = 50
     size_equipos = 6 
     generaciones = 50
     crossover_rate = 0.9
     mutation_rate = 0.03
-    enemy_mutation_rate = 0.35
-    mutation_rate_decrease = 0 
+    enemy_mutation_rate = 0.10
+    mutation_rate_decrease = 0
     cant_batallas = 400
     chunksize = population_size // os.cpu_count() #Se divide la cantidad de tareas que va a realizar cada nucleo dependiendo de la cantidad de nucleos que tenga la pc
     chunksize = chunksize if chunksize > 0 else 1
@@ -214,9 +225,9 @@ def main():
 
             # Pre-genera los equipos aleatorios
             adns_aleatorios = [random_adn(size_equipos,cant_pokemons,legendary,pokemon_dict) for _ in range(cant_batallas - population_size)]
-            equipos_aleatorios = [[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in adns_aleatorios]
             poblacion_ini_mutada = [mutate(adn,enemy_mutation_rate,cant_pokemons,legendary,pokemon_dict) for adn in poblacion_inicial]
-            equipos_aleatorios.extend([[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in poblacion_ini_mutada])
+            adns_aleatorios.extend(poblacion_ini_mutada)
+            equipos_aleatorios = [[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in adns_aleatorios]
 
             #Se crea una funcion parcial con los argumentos necesarios para luego usar el multiprocesamiento
             partial_fitness = partial(parallel_fitness_helper, moves_dict=moves_dict, 
