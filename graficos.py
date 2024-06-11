@@ -151,11 +151,19 @@ def best_team_stats(): #Grafico 6
         poke_stats = []
         for subject in subjects: 
             poke_stats.append(dic_pokemones[int(dic_id[pokemon])][subject])
+        poke_stats = np.concatenate((poke_stats,[poke_stats[0]]))
         stats.append(poke_stats)
-    num_vars = len(subjects)
-    angles = np.linspace(0, 2 * np.pi, num_vars, endpoint=False).tolist()
 
-    
+    num_vars = len(stats[0]) 
+    angles = np.linspace(0, 2 * np.pi, num_vars, endpoint=True).tolist() #angles in radians
+    print(angles)
+    plt.figure(figsize=(6,6))
+    plt.subplot(polar = True)
+    for stat in stats: 
+        plt.plot(angles,stat,linestyle = )
+    plt.xticks(angles[:-1],subjects)
+    plt.legend(best_team,loc ='best')
+    plt.show()
         
             
             
