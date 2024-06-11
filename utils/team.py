@@ -110,9 +110,12 @@ class Team:
             damage = target.get_damage(self.get_current_pokemon(), defender.get_current_pokemon(), effectiveness)
             defender.recieve_damage(damage)
             self.consecutive_switches = 0
+            return f"{self.get_current_pokemon().name} deals {round(damage)} damage to {defender.get_current_pokemon().name}"
         elif action == 'switch':
             if target is not None:
+                res = f"{self.get_current_pokemon().name} switches to "
                 self.change_pokemon(target)
                 self.consecutive_switches += 1
+                return res + f"{self.get_current_pokemon().name}"
         else:
             self.get_current_pokemon().current_hp = 0
