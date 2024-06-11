@@ -166,8 +166,8 @@ def main():
     size_equipos = 6 
     generaciones = 50
     crossover_rate = 0.9
-    mutation_rate = 0.30
-    mutation_rate_decrease = 0.01
+    mutation_rate = 0.03
+    mutation_rate_decrease = 0 
     cant_batallas = 400
     chunksize = population_size // os.cpu_count() #Se divide la cantidad de tareas que va a realizar cada nucleo dependiendo de la cantidad de nucleos que tenga la pc
     chunksize = chunksize if chunksize > 0 else 1

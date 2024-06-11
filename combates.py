@@ -80,6 +80,7 @@ def main():
     agus_team = ["Bouffalant","Delphox","Mamoswine","Tsareena","Greninja","Slaking"]
     moves_dict,pokemon_dict,effectiveness_dict = leer_datos()
     team = get_best_team(50)
+    print(team)
     best_team = pokemon_to_obj(team[4:], moves_dict, pokemon_dict, "best", int(team[3]))
     elite_1 = pokemon_to_obj(pokemon_elite_1, moves_dict, pokemon_dict, "elite_1")
 
@@ -87,7 +88,7 @@ def main():
     elite_3 = pokemon_to_obj(pokemon_elite_3, moves_dict, pokemon_dict, "elite_3")
     elite_4 = pokemon_to_obj(pokemon_elite_4, moves_dict, pokemon_dict, "elite_4")
     champion = pokemon_to_obj(pokemon_champion, moves_dict, pokemon_dict, "champion")
-    agus_team = pokemon_to_obj(agus_team, moves_dict, pokemon_dict, "Agus_team",5)
+    agus_team = pokemon_to_obj(agus_team, moves_dict, pokemon_dict, "Agus_team",0)
 
     ganador = simulated_combat(best_team,agus_team,effectiveness_dict).pokemons
     
