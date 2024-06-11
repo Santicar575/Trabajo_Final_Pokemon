@@ -31,7 +31,7 @@ def simulated_combat(best_team, team2, effectiveness):
             action_1, target_1, action_2, target_2 = action_2, target_2, action_1, target_1
 
         print(f"{first.name} turn:")
-        print(first.do_action(action_1, target_1, second, effectiveness))
+        print(first.return_action(action_1, target_1, second, effectiveness))
         
         # If any of the pokemons fainted, the turn ends, and both have the chance to switch
         if best_team.get_current_pokemon().current_hp == 0 or team2.get_current_pokemon().current_hp == 0:
@@ -45,7 +45,7 @@ def simulated_combat(best_team, team2, effectiveness):
                 action_2, target_2 = second.get_next_action(first, effectiveness)
 
             print(f"\n{second.name} turn:")
-            print(second.do_action(action_2, target_2, first, effectiveness))
+            print(second.return_action(action_2, target_2, first, effectiveness))
 
             if best_team.get_current_pokemon().current_hp == 0 or team2.get_current_pokemon().current_hp == 0:
                 if best_team.get_current_pokemon().current_hp == 0:
@@ -55,7 +55,7 @@ def simulated_combat(best_team, team2, effectiveness):
                 __faint_change__(best_team, team2, effectiveness)
         
         print(f"Turn {turn} has ended\n" + "--"*40)
-        #print("--"*40)
+        
         turn += 1
         
     print(f"{best_team.name} has won!" if any(pokemon.current_hp > 0 for pokemon in best_team.pokemons) else f"{team2.name} has won!")

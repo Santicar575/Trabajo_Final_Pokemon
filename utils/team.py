@@ -110,6 +110,29 @@ class Team:
             damage = target.get_damage(self.get_current_pokemon(), defender.get_current_pokemon(), effectiveness)
             defender.recieve_damage(damage)
             self.consecutive_switches = 0
+        elif action == 'switch':
+            if target is not None:
+                self.change_pokemon(target)
+                self.consecutive_switches += 1
+        else:
+            self.get_current_pokemon().current_hp = 0
+    
+    def return_action(self, action: str, target: Move|int|None, defender: 'Team', effectiveness: dict[str, dict[str, float]]) -> str:
+        """
+        Executes an action and returns an action.
+
+        Parameters:
+        action (str): The action that the team will do. It can be 'attack' or 'switch'.
+        target (Move|int|None): The move that the team will use if the action is 'attack', the index of the pokemon that
+        the team will switch to if the action is 'switch' or None if the action is 'skip'.
+        defender (Team): The team that will receive the action.
+        effectiveness (dict[str, dict[str, float]]): A dictionary that contains the effectiveness of each type against
+        another.
+        """
+        if action == 'attack':
+            damage = target.get_damage(self.get_current_pokemon(), defender.get_current_pokemon(), effectiveness)
+            defender.recieve_damage(damage)
+            self.consecutive_switches = 0
             return f"{self.get_current_pokemon().name} deals {round(damage)} damage to {defender.get_current_pokemon().name}"
         elif action == 'switch':
             if target is not None:
