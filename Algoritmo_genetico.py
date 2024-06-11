@@ -166,7 +166,8 @@ def main():
     size_equipos = 6 
     generaciones = 50
     crossover_rate = 0.9
-    mutation_rate = 0.03
+    mutation_rate = 0.30
+    mutation_rate_decrease = 0.01
     cant_batallas = 400
     chunksize = population_size // os.cpu_count() #Se divide la cantidad de tareas que va a realizar cada nucleo dependiendo de la cantidad de nucleos que tenga la pc
     chunksize = chunksize if chunksize > 0 else 1
@@ -186,8 +187,9 @@ def main():
             ini = time.time()
 
             # Pre-genera los equipos aleatorios
-            adns_aleatorios = [random_adn(size_equipos,cant_pokemons,legendary,pokemon_dict) for _ in range(cant_batallas)]
+            adns_aleatorios = [random_adn(size_equipos,cant_pokemons,legendary,pokemon_dict) for _ in range(cant_batallas - population_size)]
             equipos_aleatorios = [[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in adns_aleatorios]
+            equipos_aleatorios.extend([[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in poblacion_inicial])
 
             #Se crea una funcion parcial con los argumentos necesarios para luego usar el multiprocesamiento
             partial_fitness = partial(parallel_fitness_helper, moves_dict=moves_dict, 
@@ -215,6 +217,9 @@ def main():
             
             #La poblacion inicial pasa a ser la nueva poblacion
             poblacion_inicial = nueva_poblacion
+
+            #Se disminuye la tasa de mutacion
+            mutation_rate -= mutation_rate_decrease if mutation_rate - mutation_rate_decrease >= 0 else 0
             fin=time.time()
             print(fin-ini)
 
