@@ -2,7 +2,7 @@ from utils.combat import __faint_change__
 from utils.team import * 
 from utils.pokemon import *
 from graficos import get_best_team,pokedex_number_dict
-from Algoritmo_genetico import * 
+from Algoritmo_genetico import leer_datos
 
 
 
@@ -43,6 +43,7 @@ def simulated_combat(best_team, team2, effectiveness):
                 __faint_change__(best_team, team2, effectiveness)
 
         turn += 1
+    return best_team if any(pokemon.current_hp > 0 for pokemon in best_team.pokemons) else team2
     
 def pokemon_to_obj(poke_list: list, moves_dict, pokemon_dict, name: str, starter = 0) -> Team:
     dic = pokedex_number_dict()
@@ -56,19 +57,23 @@ def pokemon_to_obj(poke_list: list, moves_dict, pokemon_dict, name: str, starter
 
 def main():
     pokemon_elite_1 = ["Bronzong", "Jynx", "Grumpig", "Slowbro", "Gardevoir", "Xatu"]
-    pokemon_elite_2 = ["Skunktank", "Toxicroak", "Swalot", "Venomoth", "Muk", "Crobat"]
+    pokemon_elite_2 = ["Skuntank", "Toxicroak", "Swalot", "Venomoth", "Muk", "Crobat"]
     pokemon_elite_3 = ["Hitmontop", "Hitmonlee", "Hariyama", "Machamp", "Lucario", "Hitmonchan"]
     pokemon_elite_4 = ["Weavile", "Spiritomb", "Honchkrow", "Umbreon", "Houndoom", "Absol"]
     pokemon_champion = ["Salamence", "Garchomp", "Dragonite", "Charizard", "Altaria", "Gyarados"]
     moves_dict,pokemon_dict,effectiveness_dict = leer_datos()
     team = get_best_team(50)
-    best_team = pokemon_to_obj(team[4:], moves_dict, pokemon_dict, "best", team[3])
+    best_team = pokemon_to_obj(team[4:], moves_dict, pokemon_dict, "best", int(team[3]))
     elite_1 = pokemon_to_obj(pokemon_elite_1, moves_dict, pokemon_dict, "elite_1")
-    #elite_2 = pokemon_to_obj(pokemon_elite_2, moves_dict, pokemon_dict, "elite_2")
-    #elite_3 = pokemon_to_obj(pokemon_elite_3, moves_dict, pokemon_dict, "elite_3")
-    #elite_4 = pokemon_to_obj(pokemon_elite_4, moves_dict, pokemon_dict, "elite_4")
-    #champion = pokemon_to_obj(pokemon_champion, moves_dict, pokemon_dict, "champion")
 
-    simulated_combat(best_team,elite_1,effectiveness_dict)
+    elite_2 = pokemon_to_obj(pokemon_elite_2, moves_dict, pokemon_dict, "elite_2")
+    elite_3 = pokemon_to_obj(pokemon_elite_3, moves_dict, pokemon_dict, "elite_3")
+    elite_4 = pokemon_to_obj(pokemon_elite_4, moves_dict, pokemon_dict, "elite_4")
+    champion = pokemon_to_obj(pokemon_champion, moves_dict, pokemon_dict, "champion")
+
+    ganador = simulated_combat(best_team,champion,effectiveness_dict).pokemons
+    for pokemon in ganador:
+        print(pokemon.name)
+    
 if __name__ == "__main__": 
     main()
