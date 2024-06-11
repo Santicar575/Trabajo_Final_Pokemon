@@ -186,15 +186,27 @@ def cargar_datos(datos,population_size,generaciones,size_equipos,pokemon_dict):
                 cant_pokemons = [f'{pokemon[0]},{pokemon[1]}' for pokemon in cant_pokemons]
                 epochs.writelines(f"{num_generacion},{len(temp_dict.keys())},{','.join(cant_pokemons)}\n")
 
+def pokedex_number_dict():
+    pokedex_number_dict = {}
+    with open("data/pokemons.csv") as file:
+        file.readline()
+        for line in file:
+            line = line.strip().split(",")
+            pokedex_number_dict[line[1]] = line[0]
+    return pokedex_number_dict
+
 def enemy_teams_from_csv():
+    pokedex_num_dict = pokedex_number_dict() 
     with open("best_teams.csv") as file:
         file.readline()
         lines = file.readlines()
         teams = []
         for line in lines:
             line = line.strip().split(",")
-            team = []
-            #teams.append(pokemons)
+            starter = int(line[3])
+            team = [int(pokedex_num_dict[pokemon]) for pokemon in line[4:]]
+            team.append(starter)
+            teams.append(team)
         return teams
 
 def main():
@@ -213,6 +225,7 @@ def main():
     #Se leen los datos de los archivos csv y se guardan en tres diccionarios
     moves_dict,pokemon_dict,effectiveness_dict = leer_datos()
     cant_pokemons = len(pokemon_dict)
+    pokemons_from_csv = enemy_teams_from_csv()
    
     #Se inicia la poblacion inicial con equipos aleatorios
     poblacion_inicial = iniciar_poblacion(size_equipos,cant_pokemons,population_size,legendary,pokemon_dict)
@@ -224,9 +237,12 @@ def main():
             ini = time.time()
 
             # Pre-genera los equipos aleatorios
-            adns_aleatorios = [random_adn(size_equipos,cant_pokemons,legendary,pokemon_dict) for _ in range(cant_batallas - population_size)]
-            poblacion_ini_mutada = [mutate(adn,enemy_mutation_rate,cant_pokemons,legendary,pokemon_dict) for adn in poblacion_inicial]
-            adns_aleatorios.extend(poblacion_ini_mutada)
+            #adns_aleatorios = [random_adn(size_equipos,cant_pokemons,legendary,pokemon_dict) for _ in range(cant_batallas - population_size)]
+            #poblacion_ini_mutada = [mutate(adn,enemy_mutation_rate,cant_pokemons,legendary,pokemon_dict) for adn in poblacion_inicial]
+            #adns_aleatorios.extend(poblacion_ini_mutada)
+            #equipos_aleatorios = [[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in adns_aleatorios]
+
+            adns_aleatorios = [random.choice(pokemons_from_csv) for _ in range(cant_batallas)]
             equipos_aleatorios = [[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in adns_aleatorios]
 
             #Se crea una funcion parcial con los argumentos necesarios para luego usar el multiprocesamiento
@@ -236,7 +252,7 @@ def main():
             
             #Se usa la pool para aplicar la funcion parcial a cada adn de la poblacion
             fitness_values = list(pool.imap(partial_fitness, poblacion_inicial,chunksize=chunksize)) #La variable "chunksize" especifica la cantidad de tareas que va a realizar cada nucleo a la vez
-            
+            print(fitness_values)
             datos.append(zip(fitness_values,poblacion_inicial))
             #Se seleccionan los individuos de forma aleatoria (aquellos con mas aptitud tienen mas chances de ser elegidos).
             seleccionados = seleccion(poblacion_inicial,fitness_values)
