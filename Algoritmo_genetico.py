@@ -161,12 +161,38 @@ def quicksort(arr,parametro):
             right.append(x)
     return quicksort(left,parametro) + middle + quicksort(right,parametro)
 
+def cargar_datos(datos,population_size,generaciones,size_equipos,pokemon_dict):
+    with open("epochs.csv","w") as epochs:
+        with open("best_teams.csv","w") as best_teams:
+            best_teams.writelines("epoch,aptitude,team_name,starter,pokemon_1,pokemon_2,pokemon_3,pokemon_4,pokemon_5,pokemon_6\n")
+            cant_equipos = [i for i in range(population_size*(generaciones+1))]
+            for num_generacion,generacion in enumerate(datos):
+                generacion = list(generacion)
+                temp_dict = {}
+                generacion = quicksort(generacion,0)#el cero representa la posicion por se ordena
+                for fit,adn in generacion:
+                    for pokemon in adn[:size_equipos]:
+                        if pokemon not in temp_dict.keys():
+                            temp_dict[pokemon] = 1
+                        else:
+                            temp_dict[pokemon] += 1
+                    pokemons = [pokemon_dict[pokemon]["name"] for pokemon in adn[:size_equipos]]
+                    best_teams.writelines(f"{num_generacion},{fit},Team {cant_equipos.pop(0)},{adn[-1]},{','.join(pokemons)}\n")
+
+                cant_pokemons = [",".join([pokemon_dict[pokemon]["name"],str(cant)]) for pokemon,cant in temp_dict.items()]
+                cant_pokemons= [elem.split(',') for elem in cant_pokemons]
+                cant_pokemons = [[elem[0],int(elem[1])]for elem in cant_pokemons]
+                cant_pokemons = quicksort(cant_pokemons,1)
+                cant_pokemons = [f'{pokemon[0]},{pokemon[1]}' for pokemon in cant_pokemons]
+                epochs.writelines(f"{num_generacion},{len(temp_dict.keys())},{','.join(cant_pokemons)}\n")
+
 def main():
     population_size = 50
     size_equipos = 6 
     generaciones = 50
     crossover_rate = 0.9
     mutation_rate = 0.03
+    enemy_mutation_rate = 0.35
     mutation_rate_decrease = 0 
     cant_batallas = 400
     chunksize = population_size // os.cpu_count() #Se divide la cantidad de tareas que va a realizar cada nucleo dependiendo de la cantidad de nucleos que tenga la pc
@@ -189,7 +215,8 @@ def main():
             # Pre-genera los equipos aleatorios
             adns_aleatorios = [random_adn(size_equipos,cant_pokemons,legendary,pokemon_dict) for _ in range(cant_batallas - population_size)]
             equipos_aleatorios = [[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in adns_aleatorios]
-            equipos_aleatorios.extend([[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in poblacion_inicial])
+            poblacion_ini_mutada = [mutate(adn,enemy_mutation_rate,cant_pokemons,legendary,pokemon_dict) for adn in poblacion_inicial]
+            equipos_aleatorios.extend([[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in poblacion_ini_mutada])
 
             #Se crea una funcion parcial con los argumentos necesarios para luego usar el multiprocesamiento
             partial_fitness = partial(parallel_fitness_helper, moves_dict=moves_dict, 
@@ -228,29 +255,7 @@ def main():
         fitness_values = list(pool.imap(partial_fitness, poblacion_inicial,chunksize=chunksize))
         datos.append(zip(fitness_values,poblacion_inicial))
     
-    with open("epochs.csv","w") as epochs:
-        with open("best_teams.csv","w") as best_teams:
-            best_teams.writelines("epoch,aptitude,team_name,starter,pokemon_1,pokemon_2,pokemon_3,pokemon_4,pokemon_5,pokemon_6\n")
-            cant_equipos = [i for i in range(population_size*(generaciones+1))]
-            for num_generacion,generacion in enumerate(datos):
-                generacion = list(generacion)
-                temp_dict = {}
-                generacion = quicksort(generacion,0)#el cero representa la posicion por se ordena
-                for fit,adn in generacion:
-                    for pokemon in adn[:size_equipos]:
-                        if pokemon not in temp_dict.keys():
-                            temp_dict[pokemon] = 1
-                        else:
-                            temp_dict[pokemon] += 1
-                    pokemons = [pokemon_dict[pokemon]["name"] for pokemon in adn[:size_equipos]]
-                    best_teams.writelines(f"{num_generacion},{fit},Team {cant_equipos.pop(0)},{adn[-1]},{','.join(pokemons)}\n")
-
-                cant_pokemons = [",".join([pokemon_dict[pokemon]["name"],str(cant)]) for pokemon,cant in temp_dict.items()]
-                cant_pokemons= [elem.split(',') for elem in cant_pokemons]
-                cant_pokemons = [[elem[0],int(elem[1])]for elem in cant_pokemons]
-                cant_pokemons = quicksort(cant_pokemons,1)
-                cant_pokemons = [f'{pokemon[0]},{pokemon[1]}' for pokemon in cant_pokemons]
-                epochs.writelines(f"{num_generacion},{len(temp_dict.keys())},{','.join(cant_pokemons)}\n")
+    cargar_datos(datos,population_size,generaciones,size_equipos,pokemon_dict)
 
 if __name__ == "__main__":
     main()
