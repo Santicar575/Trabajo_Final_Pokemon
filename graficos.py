@@ -132,7 +132,7 @@ def Cant_Pokemons_Epoca_Por_Tipo(): #Grafico 4
 
     # Calculate the cumulative sum of pokemon counts for each type
     y = {tipo: [cant_tipos[str(epoca)][tipo] for epoca in x] for tipo in types}
-    print(y)
+    #print(y)
     # Plot the stacked area plot
     plt.stackplot(x, y.values(), labels=y.keys(), colors=types_colors)
     plt.xlabel("Epoch")
@@ -160,18 +160,16 @@ def best_team_stats(): #Grafico 6
     plt.figure(figsize=(6,6))
     plt.subplot(polar = True)
     for stat in stats: 
-        plt.plot(angles,stat,linestyle = )
+        plt.plot(angles,stat)
     plt.xticks(angles[:-1],subjects)
-    plt.legend(best_team,loc ='best')
+    plt.legend(best_team[4:],loc ='best')
     plt.show()
         
-            
-            
-
 def show_best_team(best_team:list[str],pokemon_dict):
     dic_pokemon = dic_Pokemons()
     types = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy']
     types_colors = ['#A8A77A', '#EE8130', '#6390F0', '#F7D02C', '#7AC74C', '#96D9D6', '#C22E28', '#A33EA1', '#E2BF65', '#A98FF3', '#F95587', '#A6B91A', '#B6A136', '#735797', '#6F35FC', '#705746', '#B7B7CE', '#D685AD']
+    best_team = best_team[2:]
     team_name = best_team.pop(0)
     starter = int(best_team.pop(0))
     plt.suptitle(f"Best team: {team_name}", fontsize=10)
@@ -199,10 +197,29 @@ def show_best_team(best_team:list[str],pokemon_dict):
     plt.show()
 
 def main():
-    best_team_stats()
-    # population_size = 50
-    # print(get_best_team(population_size))
-    # show_best_team(get_best_team(population_size)[2:],pokedex_number_dict())
+    population_size = 50
+    while True:
+        n = int(input("1. Diversidad vs Epoch\n2. Fitness Evolution\n3. Pokemons in last generation\n4. Pokemon count by type over time\n5. \n6. Best team stats\n7. Show best team\n8. Exit\n"))
+        match(n):
+            case 1:
+                diversity_vs_epoch()
+            case 2:
+                fitness_evolution()
+            case 3:
+                pokemons_in_last_generation()
+            case 4:
+                Cant_Pokemons_Epoca_Por_Tipo()
+            case 5:
+                pass
+            case 6:
+                best_team_stats()
+            case 7:
+                show_best_team(get_best_team(population_size),pokedex_number_dict())
+            case 8:
+                break
+            case _:
+                print("Opcion invalida")
+    
     pass
 
 if __name__ == "__main__":
