@@ -225,7 +225,7 @@ def main():
     #Se leen los datos de los archivos csv y se guardan en tres diccionarios
     moves_dict,pokemon_dict,effectiveness_dict = leer_datos()
     cant_pokemons = len(pokemon_dict)
-    pokemons_from_csv = enemy_teams_from_csv()
+    pokemons_from_csv = enemy_teams_from_csv()[1500:]
    
     #Se inicia la poblacion inicial con equipos aleatorios
     poblacion_inicial = iniciar_poblacion(size_equipos,cant_pokemons,population_size,legendary,pokemon_dict)
@@ -252,7 +252,7 @@ def main():
             
             #Se usa la pool para aplicar la funcion parcial a cada adn de la poblacion
             fitness_values = list(pool.imap(partial_fitness, poblacion_inicial,chunksize=chunksize)) #La variable "chunksize" especifica la cantidad de tareas que va a realizar cada nucleo a la vez
-            print(fitness_values)
+            #print(fitness_values)
             datos.append(zip(fitness_values,poblacion_inicial))
             #Se seleccionan los individuos de forma aleatoria (aquellos con mas aptitud tienen mas chances de ser elegidos).
             seleccionados = seleccion(poblacion_inicial,fitness_values)
