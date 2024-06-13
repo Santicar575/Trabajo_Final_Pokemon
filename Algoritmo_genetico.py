@@ -101,18 +101,19 @@ def parallel_fitness_helper(adn, moves_dict, pokemon_dict, effectiveness_dict,eq
     return fitness(adn, moves_dict, pokemon_dict, effectiveness_dict,equipos_aleatorios,adns_aleatorios)
 
 def seleccion(poblacion,fitness_values)->list[list]:
-    #seleccionados = random.choices(poblacion, fitness_values, k = len(poblacion)//2 + 1)
     total_aptitud = sum(fitness_values)
-    seleccionados = []
-    for _ in range((len(poblacion) // 2) + 1):
-        pick = random.uniform(0,total_aptitud)
-        current = 0
-        for adn,fit in zip(poblacion,fitness_values):
-            current += fit
-            if current > pick:
-                seleccionados.append(adn)
-                break
-    return seleccionados
+    weights = [fit/total_aptitud for fit in fitness_values]
+    seleccionado = random.choices(poblacion, weights, k = 1)
+    # seleccionados = []
+    # for _ in range((len(poblacion) // 2) + 1):
+    #     pick = random.uniform(0,total_aptitud)
+    #     current = 0
+    #     for adn,fit in zip(poblacion,fitness_values):
+    #         current += fit
+    #         if current > pick:
+    #             seleccionados.append(adn)
+    #             break
+    return seleccionado
 
 def crossover(parent1,parent2,crossover_rate)->tuple[list,list]:
     if crossover_rate >= random.random():
@@ -225,7 +226,7 @@ def main():
     #Se leen los datos de los archivos csv y se guardan en tres diccionarios
     moves_dict,pokemon_dict,effectiveness_dict = leer_datos()
     cant_pokemons = len(pokemon_dict)
-    pokemons_from_csv = enemy_teams_from_csv()[1500:]
+    pokemons_from_csv = enemy_teams_from_csv()[2000:]
    
     #Se inicia la poblacion inicial con equipos aleatorios
     poblacion_inicial = iniciar_poblacion(size_equipos,cant_pokemons,population_size,legendary,pokemon_dict)
@@ -252,16 +253,17 @@ def main():
             
             #Se usa la pool para aplicar la funcion parcial a cada adn de la poblacion
             fitness_values = list(pool.imap(partial_fitness, poblacion_inicial,chunksize=chunksize)) #La variable "chunksize" especifica la cantidad de tareas que va a realizar cada nucleo a la vez
-            #print(fitness_values)
+            
+            #Se guardan los datos para luego crear los archivos csv
             datos.append(zip(fitness_values,poblacion_inicial))
-            #Se seleccionan los individuos de forma aleatoria (aquellos con mas aptitud tienen mas chances de ser elegidos).
-            seleccionados = seleccion(poblacion_inicial,fitness_values)
+
+            #Se crea una nueva poblacion
             nueva_poblacion = []
 
             for _ in range(population_size//2):
-                #se toman dos padres de forma aleatoria de la lista de seleccionados
-                parent1 = seleccionados[(random.randint(0,len(seleccionados)-1))]
-                parent2 = seleccionados[random.randint(0,len(seleccionados)-1)]
+                #se toman dos padres seleccionados dependiendo de su aptitud de la poblacion incial
+                parent1 = seleccion(poblacion_inicial,fitness_values)
+                parent2 = seleccion(poblacion_inicial,fitness_values)
 
                 #Se cruzan los dos padres 
                 res1,res2 = crossover(parent1,parent2,crossover_rate)
@@ -282,6 +284,7 @@ def main():
         fitness_values = list(pool.imap(partial_fitness, poblacion_inicial,chunksize=chunksize))
         datos.append(zip(fitness_values,poblacion_inicial))
     
+    #Se crean los archivos csv: epochs.csv y best_teams.csv
     cargar_datos(datos,population_size,generaciones,size_equipos,pokemon_dict)
 
 if __name__ == "__main__":
