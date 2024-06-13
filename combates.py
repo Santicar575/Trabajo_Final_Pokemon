@@ -89,7 +89,7 @@ def main():
     champion = pokemon_to_obj(pokemon_champion, moves_dict, pokemon_dict, "champion")
     agus_team = pokemon_to_obj(agus_team, moves_dict, pokemon_dict, "Agus_team",0)
 
-    ganador = simulated_combat(best_team,champion,effectiveness_dict).pokemons
+    ganador = simulated_combat(best_team,agus_team,effectiveness_dict).pokemons
     
 if __name__ == "__main__": 
     main()

@@ -113,7 +113,7 @@ def seleccion(poblacion,fitness_values)->list[list]:
     #         if current > pick:
     #             seleccionados.append(adn)
     #             break
-    return seleccionado
+    return seleccionado[0]
 
 def crossover(parent1,parent2,crossover_rate)->tuple[list,list]:
     if crossover_rate >= random.random():
