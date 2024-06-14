@@ -6,7 +6,7 @@ import os
 import random
 from functools import partial
 import numpy as np
-import time
+from tqdm import tqdm
 
 def random_adn(size_equipo,cant_pokemons,legendary,pokemon_dict):
     adn = []
@@ -104,15 +104,6 @@ def seleccion(poblacion,fitness_values)->list[list]:
     total_aptitud = sum(fitness_values)
     weights = [fit/total_aptitud for fit in fitness_values]
     seleccionado = random.choices(poblacion, weights, k = 1)
-    # seleccionados = []
-    # for _ in range((len(poblacion) // 2) + 1):
-    #     pick = random.uniform(0,total_aptitud)
-    #     current = 0
-    #     for adn,fit in zip(poblacion,fitness_values):
-    #         current += fit
-    #         if current > pick:
-    #             seleccionados.append(adn)
-    #             break
     return seleccionado[0]
 
 def crossover(parent1,parent2,crossover_rate)->tuple[list,list]:
@@ -216,8 +207,6 @@ def main():
     generaciones = 50
     crossover_rate = 0.9
     mutation_rate = 0.03
-    enemy_mutation_rate = 0.10
-    mutation_rate_decrease = 0
     cant_batallas = 400
     chunksize = population_size // os.cpu_count() #Se divide la cantidad de tareas que va a realizar cada nucleo dependiendo de la cantidad de nucleos que tenga la pc
     chunksize = chunksize if chunksize > 0 else 1
@@ -231,58 +220,55 @@ def main():
     #Se inicia la poblacion inicial con equipos aleatorios
     poblacion_inicial = iniciar_poblacion(size_equipos,cant_pokemons,population_size,legendary,pokemon_dict)
     datos = []
+
     with Pool(os.cpu_count()) as pool: #Se crea un pool con la cantidad de nucleos que tenga la pc del usuario
-        #Se itera segun la cantidad de generaciones a realizar
-        for generacion in range(generaciones):
-            print(f"Generacion {generacion}:")
-            ini = time.time()
+        print("Algoritmo genetico iniciado")
+        with tqdm(total=generaciones,desc="Generaciones", bar_format="{l_bar}{bar} [tiempo transcurrido: {elapsed} | tiempo restante: {remaining}]", dynamic_ncols=True) as pbar:
+            #Se itera segun la cantidad de generaciones a realizar
+            for _ in range(generaciones):
 
-            # Pre-genera los equipos aleatorios
-            #adns_aleatorios = [random_adn(size_equipos,cant_pokemons,legendary,pokemon_dict) for _ in range(cant_batallas - population_size)]
-            #poblacion_ini_mutada = [mutate(adn,enemy_mutation_rate,cant_pokemons,legendary,pokemon_dict) for adn in poblacion_inicial]
-            #adns_aleatorios.extend(poblacion_ini_mutada)
-            #equipos_aleatorios = [[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in adns_aleatorios]
+                # Pre-genera los equipos aleatorios para las batallas
 
-            adns_aleatorios = [random.choice(pokemons_from_csv) for _ in range(cant_batallas)]
+                adns_aleatorios = [random.choice(pokemons_from_csv) for _ in range(cant_batallas)]
+                equipos_aleatorios = [[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in adns_aleatorios]
+
+                #Se crea una funcion parcial con los argumentos necesarios para luego usar el multiprocesamiento
+                partial_fitness = partial(parallel_fitness_helper, moves_dict=moves_dict, 
+                                        pokemon_dict=pokemon_dict, effectiveness_dict=effectiveness_dict,
+                                        equipos_aleatorios = equipos_aleatorios,adns_aleatorios = adns_aleatorios)
+                
+                #Se usa la pool para aplicar la funcion parcial a cada adn de la poblacion
+                fitness_values = list(pool.imap(partial_fitness, poblacion_inicial,chunksize=chunksize)) #La variable "chunksize" especifica la cantidad de tareas que va a realizar cada nucleo a la vez
+                
+                #Se guardan los datos para luego crear los archivos csv
+                datos.append(zip(fitness_values,poblacion_inicial))
+
+                #Se crea una nueva poblacion
+                nueva_poblacion = []
+
+                for _ in range(population_size//2):
+                    #se toman dos padres seleccionados dependiendo de su aptitud de la poblacion incial
+                    parent1 = seleccion(poblacion_inicial,fitness_values)
+                    parent2 = seleccion(poblacion_inicial,fitness_values)
+
+                    #Se cruzan los dos padres 
+                    res1,res2 = crossover(parent1,parent2,crossover_rate)
+
+                    #Se agrega a la nueva poblacion los dos resultados del cruze despues de haber pasado por la funcion de mutacion
+                    nueva_poblacion.extend([mutate(res1,mutation_rate,cant_pokemons,legendary,pokemon_dict),mutate(res2,mutation_rate,cant_pokemons,legendary,pokemon_dict)])
+                
+                #La poblacion inicial pasa a ser la nueva poblacion
+                poblacion_inicial = nueva_poblacion
+                
+                #Se actualiza la barra de progreso
+                pbar.update(1)
+            
+            #Se calcula el fitness de la ultima generacion
+            adns_aleatorios = [random_adn(size_equipos,cant_pokemons,legendary,pokemon_dict) for _ in range(cant_batallas)]
             equipos_aleatorios = [[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in adns_aleatorios]
-
-            #Se crea una funcion parcial con los argumentos necesarios para luego usar el multiprocesamiento
-            partial_fitness = partial(parallel_fitness_helper, moves_dict=moves_dict, 
-                                    pokemon_dict=pokemon_dict, effectiveness_dict=effectiveness_dict,
-                                    equipos_aleatorios = equipos_aleatorios,adns_aleatorios = adns_aleatorios)
-            
-            #Se usa la pool para aplicar la funcion parcial a cada adn de la poblacion
-            fitness_values = list(pool.imap(partial_fitness, poblacion_inicial,chunksize=chunksize)) #La variable "chunksize" especifica la cantidad de tareas que va a realizar cada nucleo a la vez
-            
-            #Se guardan los datos para luego crear los archivos csv
+            fitness_values = list(pool.imap(partial_fitness, poblacion_inicial,chunksize=chunksize))
             datos.append(zip(fitness_values,poblacion_inicial))
-
-            #Se crea una nueva poblacion
-            nueva_poblacion = []
-
-            for _ in range(population_size//2):
-                #se toman dos padres seleccionados dependiendo de su aptitud de la poblacion incial
-                parent1 = seleccion(poblacion_inicial,fitness_values)
-                parent2 = seleccion(poblacion_inicial,fitness_values)
-
-                #Se cruzan los dos padres 
-                res1,res2 = crossover(parent1,parent2,crossover_rate)
-
-                #Se agrega a la nueva poblacion los dos resultados del cruze despues de haber pasado por la funcion de mutacion
-                nueva_poblacion.extend([mutate(res1,mutation_rate,cant_pokemons,legendary,pokemon_dict),mutate(res2,mutation_rate,cant_pokemons,legendary,pokemon_dict)])
             
-            #La poblacion inicial pasa a ser la nueva poblacion
-            poblacion_inicial = nueva_poblacion
-
-            #Se disminuye la tasa de mutacion
-            mutation_rate -= mutation_rate_decrease if mutation_rate - mutation_rate_decrease >= 0 else 0
-            fin=time.time()
-            print(fin-ini)
-
-        adns_aleatorios = [random_adn(size_equipos,cant_pokemons,legendary,pokemon_dict) for _ in range(cant_batallas)]
-        equipos_aleatorios = [[Pokemon.from_dict(adn[i],pokemon_dict[adn[i]],moves_dict) for i in range(size_equipos)] for adn in adns_aleatorios]
-        fitness_values = list(pool.imap(partial_fitness, poblacion_inicial,chunksize=chunksize))
-        datos.append(zip(fitness_values,poblacion_inicial))
     
     #Se crean los archivos csv: epochs.csv y best_teams.csv
     cargar_datos(datos,population_size,generaciones,size_equipos,pokemon_dict)
