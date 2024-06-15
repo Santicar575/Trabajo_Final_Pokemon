@@ -156,6 +156,7 @@ def simulated_combat_gui(best_team, team2, effectiveness,pokemon_dict,pokedex_di
         for turn in battle_log_mia: 
             print(turn)
             if turn["first"][1] == "switch":
+                screen.blit(background,[0,0])
                 pygame.display.flip()
                 pokemon1 = pokedex_dict[turn['first'][3][0]].zfill(3)
                 equipo1_pokemon_image = pygame.transform.scale(pygame.image.load(f'data/imgs/{pokemon1}.png'),(200,200))
