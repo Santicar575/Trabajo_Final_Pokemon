@@ -154,14 +154,24 @@ def simulated_combat_gui(best_team, team2, effectiveness,pokemon_dict,pokedex_di
                 sys.exit()
       
         for turn in battle_log_mia: 
-            if action_1 == "switch":
-                pokemon1 = pokedex_dict[turn[4][0]].zfill(3)
+            print(turn)
+            if turn["first"][1] == "switch":
+                pygame.display.flip()
+                pokemon1 = pokedex_dict[turn['first'][3][0]].zfill(3)
                 equipo1_pokemon_image = pygame.transform.scale(pygame.image.load(f'data/imgs/{pokemon1}.png'),(200,200))
                 equipo2_pokemon_image = pygame.transform.scale(pygame.image.load(f'data/imgs/{pokemon2}.png'),(200,200))
                 screen.blit(equipo1_pokemon_image, (100, 225))
                 screen.blit(equipo2_pokemon_image, (500, 105))
-                text = f"{turn[0].name} was {} to {pokemon1} "
+                text = f"{turn["first"][0].name} was {turn["first"][4].name} to {pokemon1} "
+                pygame.draw.rect(screen, (255, 255, 255), rectangle)
+                # Dibujar el texto en la pantalla
+                text_width = text_amigo.get_width()
+                text_height = text_amigo.get_height()
+                screen.blit(text_amigo, (rectangle.x + rectangle.width - text_width, rectangle.y + (rectangle.height - text_height) // 2))
                 pygame.display.flip()
+
+
+
             elif action_1 == "attack": 
                 pass
 
