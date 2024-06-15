@@ -154,27 +154,81 @@ def simulated_combat_gui(best_team, team2, effectiveness,pokemon_dict,pokedex_di
                 sys.exit()
       
         for turn in battle_log_mia: 
-            print(turn)
+            print(turn["first"][4].name)
             if turn["first"][1] == "switch":
+                time.sleep(2)
+                #reseteo de fondo
                 screen.blit(background,[0,0])
                 pygame.display.flip()
-                pokemon1 = pokedex_dict[turn['first'][3][0]].zfill(3)
+                time.sleep(2)
+                #cambio de imagenes
+                pokemon1 = pokedex_dict[turn['first'][3][0]]
                 equipo1_pokemon_image = pygame.transform.scale(pygame.image.load(f'data/imgs/{pokemon1}.png'),(200,200))
                 equipo2_pokemon_image = pygame.transform.scale(pygame.image.load(f'data/imgs/{pokemon2}.png'),(200,200))
                 screen.blit(equipo1_pokemon_image, (100, 225))
                 screen.blit(equipo2_pokemon_image, (500, 105))
+
+                #texto de accion
                 text = f"{turn["first"][0].name} was {turn["first"][4].name} to {pokemon1} "
                 pygame.draw.rect(screen, (255, 255, 255), rectangle)
+                text_surface = font.render(text, True, (0,0,0))
+                pygame.draw.rect(screen,(255,255,255),rectangle)
+                screen.blit(text_surface, (60, 470))
+
+
+                #POKEMON AMIGO
+                rectangle_amigo = pygame.Rect(457, 317, 195, 20) 
+                texto = pokemon1
+                text_amigo = font.render(texto, True, (0, 0, 0))
+                pygame.draw.rect(screen, (255, 255, 255), rectangle_amigo)
                 # Dibujar el texto en la pantalla
                 text_width = text_amigo.get_width()
                 text_height = text_amigo.get_height()
-                screen.blit(text_amigo, (rectangle.x + rectangle.width - text_width, rectangle.y + (rectangle.height - text_height) // 2))
+                screen.blit(text_amigo, (rectangle_amigo.x + rectangle_amigo.width - text_width, rectangle_amigo.y + (rectangle_amigo.height - text_height) // 2))
+                
+
+
+                #POKEMON ENEMIGO
+                rectangle_enemigo = pygame.Rect(457, 317, 195, 20) 
+                texto = pokemon2
+                text_enemigo = font.render(texto, True, (0, 0, 0))
+                pygame.draw.rect(screen, (255, 255, 255), rectangle_enemigo)
+                # Dibujar el texto en la pantalla
+                text_width = text_enemigo.get_width()
+                text_height = text_amigo.get_height()
+                screen.blit(text_enemigo, (rectangle_amigo.x + rectangle_amigo.width - text_width, rectangle_amigo.y + (rectangle_amigo.height - text_height) // 2))
+                pygame.display.flip()
+
+
+
+
+                
+         
                 pygame.display.flip()
 
 
 
             elif action_1 == "attack": 
                 pass
+
+
+
+        # while True:    
+        #     next_turn = False
+        #     for event in pygame.event.get():
+        #         if event.type == pygame.QUIT:
+        #             pygame.quit()
+        #             sys.exit()
+        #         if event.type == pygame.KEYDOWN:
+        #             screen.blit(background,[0, 0])
+        #             next_turn = True
+        #             break
+        #     if next_turn:
+        #         break
+        #     pygame.display.flip()
+            
+        # pygame.quit()
+        # sys.exit()
 
 
 
