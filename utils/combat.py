@@ -22,6 +22,8 @@ def __faint_change__(team1: Team, team2: Team, effectiveness: dict[str, dict[str
     action_2, target_2 = other_team.get_next_action(fainted_team, effectiveness)
     if action_2 == 'switch':
         other_team.do_action(action_2, target_2, fainted_team, effectiveness)
+        return action_1, action_2
+    return action_1, None
 
 def __fight__(team1: Team, team2: Team, effectiveness: dict[str, dict[str, float]]) -> Team:
     """
