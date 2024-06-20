@@ -228,10 +228,7 @@ def simulated_combat_gui(best_team, team2, effectiveness,pokemon_dict,pokedex_di
                         imprimir_pokemons(screen, pokemon1_number, pokemon2_number)
                         print(f"{log_first[turn][5]} AAAAAAAAA {log_first[turn][0]}, ERROR EN EL PRIMERO")
                         text=  (f"{log_second[turn][5]} has fainted")
-                        pygame.draw.rect(screen, (255, 255, 255), rectangle)
-                        text_surface = font.render(text, True, (0,0,0))
-                        pygame.draw.rect(screen,(255,255,255),rectangle)
-                        screen.blit(text_surface, (60, 470))
+                        texto_de_accion(screen,text,rectangle,font)
                         #time.sleep(1)
                         pygame.display.update()
 
@@ -452,10 +449,10 @@ def texto_de_accion(screen,text,rectangle, font):
     pygame.draw.rect(screen, (255, 255, 255), rectangle)
     text_surface = font.render(text, True, (0,0,0))
     pygame.draw.rect(screen,(255,255,255),rectangle)
-    screen.blit(text_surface, (60, 470))
+    screen.blit(text_surface, (45, 470))
     pass 
 def Pokemon_Enemigo(screen, texto_enemigo):
-    rectangle = pygame.Rect(20, 90, 190, 20)     
+    rectangle = pygame.Rect(20, 85, 190, 20)     
     pygame.draw.rect(screen, (255,255,255), rectangle)
     text_width = texto_enemigo.get_width()
     text_height = texto_enemigo.get_height()
