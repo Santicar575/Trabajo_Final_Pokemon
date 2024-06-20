@@ -142,7 +142,7 @@ def simulated_combat_gui(best_team, team2, effectiveness,pokemon_dict,pokedex_di
             # print(f"second: {log_second[turn]}")     
 #(0, 'Agus_team', 'Bouffalant', 'switch', 'Bouffalant switches to Delphox', 'Delphox', 0, None)
 #(turn, team, pokemon inicial, accion, return accion, pokemon de salida, faint?, accion faint)
-#///////////////////////////////////////////////////////////////////
+
             
                 if log_first[turn][3]== "switch":
                     #time.sleep(1)
@@ -213,7 +213,7 @@ def simulated_combat_gui(best_team, team2, effectiveness,pokemon_dict,pokedex_di
                     texto_de_accion(screen,text,rectangle,font)
                     #time.sleep(1)
                     pygame.display.update()
-    ###############################################################################################
+    
                     if log_second[turn][6]: #si es true significa que el ataque derribo al enemigo
                         screen.blit(background,[0,0])
                         pygame.display.update()
@@ -450,7 +450,7 @@ def texto_de_accion(screen,text,rectangle, font):
     text_surface = font.render(text, True, (0,0,0))
     pygame.draw.rect(screen,(255,255,255),rectangle)
     screen.blit(text_surface, (45, 470))
-    pass 
+    
 def Pokemon_Enemigo(screen, texto_enemigo):
     rectangle = pygame.Rect(20, 85, 190, 20)     
     pygame.draw.rect(screen, (255,255,255), rectangle)
