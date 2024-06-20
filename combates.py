@@ -4,21 +4,19 @@ from utils.pokemon import *
 from graficos import get_best_team,pokedex_number_dict
 from Algoritmo_genetico import leer_datos
 import pygame, sys, time 
-
-def simulated_fight(best_team, team2, effectiveness,pokemon_dict,pokedex_dict,moves_data):
+def simulated_fight(best_team, team2, effectiveness):
     turn = 0    
     log_first, log_second, hps = [], [], []
-
     while any(pokemon.current_hp > 0 for pokemon in best_team.pokemons) and any(pokemon.current_hp > 0 for pokemon in team2.pokemons):            
         action_1, target_1 = best_team.get_next_action(team2, effectiveness)
         action_2, target_2 = team2.get_next_action(best_team, effectiveness)
         fainted_1, fainted_2= None, None
         faint1, faint2 = 0, 0   
+        movimeinto1, movimeinto2 = None, None
         # Switching always happens first
         if action_1 == 'switch': 
             first, second = best_team, team2
             poke1, poke2 = best_team.get_current_pokemon(), team2.get_current_pokemon()
-
         elif action_2 == 'switch':
             first, second = team2, best_team
             poke2, poke1 = best_team.get_current_pokemon(), team2.get_current_pokemon()
@@ -28,7 +26,6 @@ def simulated_fight(best_team, team2, effectiveness,pokemon_dict,pokedex_dict,mo
         elif best_team.get_current_pokemon().speed > team2.get_current_pokemon().speed: 
             first, second = best_team, team2
             poke1, poke2 = best_team.get_current_pokemon(), team2.get_current_pokemon()
-
         else:
             first, second = team2, best_team
             action_1, target_1, action_2, target_2 = action_2, target_2, action_1, target_1
@@ -39,11 +36,10 @@ def simulated_fight(best_team, team2, effectiveness,pokemon_dict,pokedex_dict,mo
         # If any of the pokemons fainted, the turn ends, and both have the chance to switch
         if first.get_current_pokemon().current_hp == 0 or second.get_current_pokemon().current_hp == 0:
             if first.get_current_pokemon().current_hp == 0:
-                #print(f"{first.get_current_pokemon().name} has fainted")
                 faint1 = 1 
                 fainted_1,fainted_2 = __faint_change__(best_team, team2, effectiveness)
             else:
-                #print(f"{second.get_current_pokemon().name} has fainted")
+                movimeinto2= f"{second.get_current_pokemon().name} has fainted"
                 faint2 = 1 
                 fainted_2,fainted_1 = __faint_change__(best_team, team2, effectiveness)
     
@@ -51,15 +47,13 @@ def simulated_fight(best_team, team2, effectiveness,pokemon_dict,pokedex_dict,mo
             if action_2 == 'attack' and target_2 is None:
                 action_2, target_2 = second.get_next_action(first, effectiveness)
             movimeinto2 = second.return_action(action_2, target_2, first, effectiveness) 
-
-
             if first.get_current_pokemon().current_hp == 0 or second.get_current_pokemon().current_hp == 0:
                 if first.get_current_pokemon().current_hp == 0:
                     faint1 = 1 
                     fainted_1, fainted_2  = __faint_change__(best_team, team2, effectiveness)
-                    
+    
                 else:
-                    print(f"{second.get_current_pokemon().name} has fainted")
+                    movimeinto2= f"{second.get_current_pokemon().name} has fainted"
                     faint2 = 1
                     fainted_2, fainted_1 = __faint_change__(best_team, team2, effectiveness)
         hp_final_1 = best_team.get_current_pokemon().current_hp
@@ -68,40 +62,34 @@ def simulated_fight(best_team, team2, effectiveness,pokemon_dict,pokedex_dict,mo
         log_second.append((turn, second.name, poke2.name,action_2, movimeinto2, second.get_current_pokemon().name, faint2, fainted_2))
         turn += 1
         hps.append((hp_final_1, hp_final_2))
-
     #Display who won
     winner = best_team if any(pokemon.current_hp > 0 for pokemon in best_team.pokemons) else team2
+    return log_first, log_second, winner 
 
-    for i in range(len(log_first)):
-        print(log_first[i])
-        print(log_second[i])
-        print("//////////////////")
-
-    return log_first, log_second 
-
-def simulated_combat_gui(best_team, team2, effectiveness,pokemon_dict,pokedex_dict,moves_data,log_first, log_second):
+def simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_second):
     # Create a new window
     pygame.init()
     
     # Set the size of the window
     screen = pygame.display.set_mode((772, 518))
-
     # Set the title of the window
     pygame.display.set_caption("Pokemon Battle")
-
     # Create a font object
     path = "Interfaz/pokemon_font.ttf"
     font = pygame.font.Font(path, 36)
-
     # #Create the backgroound for the window
     background = pygame.image.load("Interfaz/background.jpg").convert()
    
-
     screen.blit(background,[0,0])
-    pokemon1_number = pokedex_dict[best_team.get_current_pokemon().name].zfill(3) # numero de pokedex
-    pokemon2_number = pokedex_dict[team2.get_current_pokemon().name].zfill(3)
-    imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
+    if log_first[0][1] == best_team.name:
+        pokemon1_number = pokedex_dict[log_first[0][2]].zfill(3)
+        pokemon2_number = pokedex_dict[log_second[0][2]].zfill(3)
+    else:
+        pokemon1_number = pokedex_dict[log_second[0][2]].zfill(3)
+        pokemon2_number = pokedex_dict[log_first[0][2]].zfill(3)
+        
 
+    imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
     #LOG
     rectangle = pygame.Rect(30, 450, 680, 65) 
     text = "Inicio de batalla!!!"
@@ -110,320 +98,244 @@ def simulated_combat_gui(best_team, team2, effectiveness,pokemon_dict,pokedex_di
     pygame.draw.rect(screen,(255,255,255),rectangle)
     # Dibujar el texto en la pantalla
     screen.blit(text_surface, (60, 470))
-    
-    
+
     #POKEMON AMIGO
-    poke_amigo = best_team.get_current_pokemon().name
+    poke_amigo =pokemon_dict[int(pokemon1_number)]['name']
     texto_amigo = font.render(poke_amigo, True, (0, 0, 0))
     Pokemon_Amigo(screen, texto_amigo)
     
-
     #POKEMON ENEMIGO
-    poke_enemigo = team2.get_current_pokemon().name
+    poke_enemigo = pokemon_dict[int(pokemon2_number)]['name']
     texto_enemigo = font.render(poke_enemigo, True, (0, 0, 0))
     Pokemon_Enemigo(screen, texto_enemigo)    
     imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
-
     pygame.display.update()
-   
-    while True: 
+    turn, flag = 0, True
+    while flag: 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
       
-        for turn in range(len(log_first)):
-            # print(f"first: {log_first[turn]}")
-            # print(f"second: {log_second[turn]}")     
+            elif event.type == pygame.KEYDOWN:
+                if turn >= len(log_first):
+                    flag = False
+                    break
 #(0, 'Agus_team', 'Bouffalant', 'switch', 'Bouffalant switches to Delphox', 'Delphox', 0, None)
 #(turn, team, pokemon inicial, accion, return accion, pokemon de salida, faint?, accion faint)
 #///////////////////////////////////////////////////////////////////
-            if log_first[turn][3]== "switch":
-                time.sleep(1)
-                screen.blit(background,[0,0]) #reseteo de fondo
-                time.sleep(1)
-                pygame.display.update()
-              
-                #cambio de imagenes
-                if log_first[turn][1] == best_team.name: 
-                    pokemon1_number = int(pokedex_dict[log_first[turn][5]])  #pokemon podex number
-                    pokemon1 = log_first[turn][5]
-                    pokemon2_number = int(pokedex_dict[log_second[turn][5]])
-                    pokemon2 = log_second[turn][5]#current pokemon at that time as an object
-                 
-                else: 
-                    pokemon2_number = int(pokedex_dict[log_first[turn][5]]) # pokemon podex number
-                    pokemon2 = log_first[turn][5]
-                    pokemon1_number = int(pokedex_dict[log_second[turn][5]])
-                    pokemon1 = log_second[turn][5]#current pokemon at that time as an object
-              
-                #POKEMON AMIGO
-                texto_amigo = font.render(pokemon1, True, (0, 0, 0))
-                Pokemon_Amigo(screen,texto_amigo)
-
-                    #POKEMON ENEMIGO       
-                text_enemigo = font.render(pokemon2, True, (0, 0, 0))
-                Pokemon_Enemigo(screen, text_enemigo)
-                imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
-            
-
-                #texto de accion
-                text = f"{log_first[turn][1]} changes {log_first[turn][2]} to {log_first[turn][5]} "
-                texto_de_accion(screen,text,rectangle,font)
-                time.sleep(1)
-                pygame.display.update()
-
-            elif log_first[turn][3] == "attack": 
-                time.sleep(1)
-                #reseteo de fondo
-                screen.blit(background,[0,0])
-                pygame.display.update()
-
-                #cambio de imagenes
-                if log_first[turn][1] == best_team.name: 
-                    pokemon1 = log_first[turn][5] #current pokemon at that time  
-                    pokemon1_number = int(pokedex_dict[pokemon1]) # pokemon podex number
-                    pokemon2 = log_second[turn][5]
-                    pokemon2_number = int(pokedex_dict[pokemon2])
-                else: 
-                    pokemon2 = log_first[turn][5] #current pokemon at that time  
-                    pokemon2_number = int(pokedex_dict[pokemon2]) # pokemon podex number
-                    pokemon1 = log_second[turn][5]
-                    pokemon1_number = int(pokedex_dict[pokemon1])
-
-                imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
-            
-                #POKEMON AMIGO
-                #POKEMON AMIGO
-                texto_amigo = font.render(pokemon1, True, (0, 0, 0))
-                Pokemon_Amigo(screen,texto_amigo)
-
-                #POKEMON ENEMIGO       
-                text_enemigo = font.render(pokemon2, True, (0, 0, 0))
-                Pokemon_Enemigo(screen, text_enemigo)
-            
-                #textp de accion 
-                text=  log_first[turn][4]
-                pygame.draw.rect(screen, (255, 255, 255), rectangle)
-                text_surface = font.render(text, True, (0,0,0))
-                pygame.draw.rect(screen,(255,255,255),rectangle)
-                screen.blit(text_surface, (60, 470))
-                time.sleep(1)
-                pygame.display.update()
-###############################################################################################
-                if log_second[turn][6]: #si es true significa que el ataque derribo al enemigo
-                    screen.blit(background,[0,0])
+                if log_first[turn][3]== "switch":
+                  
+                    screen.blit(background,[0,0]) #reseteo de fondo
                     pygame.display.update()
-                      #POKEMON AMIGO
-                    texto_amigo = font.render(pokemon1, True, (0, 0, 0))
-                    Pokemon_Amigo(screen,texto_amigo)
-
-                    #POKEMON ENEMIGO       
-                    text_enemigo = font.render(pokemon2, True, (0, 0, 0))
-                    Pokemon_Enemigo(screen, text_enemigo)
-
-                    imprimir_pokemons(screen, pokemon1_number, pokemon2_number)
-                    print(f"{log_first[turn][5]} AAAAAAAAA {log_first[turn][0]}, ERROR EN EL PRIMERO")
-                    text=  (f"{log_second[turn][5]} has fainted")
-                    texto_de_accion(screen,text,rectangle,font)
-                    #time.sleep(1)
-                    pygame.display.update()
-
-                    #ACA ESTA EL ERROR DE SWITCHEOS 
-
-                    screen.blit(background,[0,0])
-                    pygame.display.update()
+                
+                    #cambio de imagenes
+                    if log_first[turn][1] == best_team.name: 
+                        pokemon1_inicio = log_first[turn][2] #current pokemon at the beginning
+                        pokemon1_number = int(pokedex_dict[log_first[turn][5]])  #pokemon podex number
+                        pokemon1 = log_first[turn][5]
+                        pokemon2_inicio = log_second[turn][2]
+                        pokemon2_number = int(pokedex_dict[log_second[turn][5]])
+                        pokemon2 = log_second[turn][5]#current pokemon at that time as an object
+                       
+                    else: 
+                        pokemon2_number = int(pokedex_dict[log_first[turn][5]]) # pokemon podex number
+                        pokemon2 = log_first[turn][5]
+                        pokemon1_number = int(pokedex_dict[log_second[turn][5]])
+                        pokemon1 = log_second[turn][5]#current pokemon at that time as an object
+                      
                     #POKEMON AMIGO
-                    texto_amigo = font.render(pokemon1, True, (0, 0, 0))
+                    texto_amigo = font.render(pokemon1_inicio, True, (0, 0, 0))
                     Pokemon_Amigo(screen,texto_amigo)
-
-                    #POKEMON ENEMIGO       
-                    text_enemigo = font.render(pokemon2, True, (0, 0, 0))
-                    Pokemon_Enemigo(screen, text_enemigo)
-
-                    imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
-                    text = f"{log_second[turn][2]} has changed to {log_second[turn][5]}"
-                    texto_de_accion(screen,text,rectangle,font)
-                    time.sleep(1)
-                    pygame.display.update()
-
-                    if log_first[turn][7] == "switch":  # si el team que derribo al otro pokemon quiere cambiar
-                        if log_first[turn][1] == best_team.name: 
-                            pokemon2_number = int(pokedex_dict[log_second[turn][5]])  # pokemon podex number
-                            pokemon1_number = int(pokedex_dict[log_first[turn][5]])
-                            pokemon1_number = int(pokedex_dict[pokemon1])
-                            pokemon2_number = int(pokedex_dict[pokemon2])
-                        else:
-                            pokemon1_number = int(pokedex_dict[log_second[turn][5]])  # pokemon podex number
-                            pokemon2_number = int(pokedex_dict[log_first[turn][5]])
-                            pokemon1_number = int(pokedex_dict[pokemon1])
-                            pokemon2_number = int(pokedex_dict[pokemon2])
-
-                        screen.blit(background,([0,0])) 
-                        pygame.display.update()
-                        imprimir_pokemons(screen, pokemon1_number, pokemon2_number)
-                        
-                        texto = pokemon1
-                        texto_amigo = font.render(texto, True, (0, 0, 0))
-                        Pokemon_Amigo(screen, texto_amigo)
-
-                        texto = pokemon2
-                        text_enemigo = font.render(texto, True, (0, 0, 0))
-                        Pokemon_Enemigo(screen, text_enemigo)
-                        text = f"{log_first[turn][2]} has changed to {log_first[turn][5]}"
-                        texto_de_accion(screen,text,rectangle,font)
-                        time.sleep(1)
-                        pygame.display.update()
-###############################################################################################
-#////////////////////////////////////////////////////////////////////
-            elif log_first[turn][3] == 'skip': 
-                    screen.blit(background,[0,0])
-                    pygame.display.update()
-                    imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
-
-                    #POKEMON AMIGO
-                    texto_amigo = font.render(pokemon1, True, (0, 0, 0))
-                    Pokemon_Amigo(screen,texto_amigo)
-
-                    #POKEMON ENEMIGO       
-                    text_enemigo = font.render(pokemon2, True, (0, 0, 0))
-                    Pokemon_Enemigo(screen, text_enemigo)
-                    #time.sleep(1)
-                    text=  f"{log_first[turn][1]} has skipped his turn"
-                    texto_de_accion(screen,text,rectangle,font)
-                    time.sleep(1)
-                    pygame.display.update()
-
-#////////////////////////////////////////////////////////////////////
-            if log_second[turn][3] == 'switch': 
-                time.sleep(1)
-                #reseteo de fondo
-                screen.blit(background,[0,0])
-                time.sleep(1)
-                pygame.display.update()
-
-                #cambio de imagenes
-                if log_second[turn][1]== best_team.name: 
-                    pokemon1_number = int(pokedex_dict[log_second[turn][5]])  # pokemon podex number
-                    pokemon1 = log_second[turn][5]
-                    pokemon2_number = int(pokedex_dict[log_first[turn][5]])
-                    pokemon2 = log_first[turn][5] #current pokemon at that time as an object
                     
-                else: 
-                    pokemon1_number = int(pokedex_dict[log_first[turn][5]])  # pokemon podex number
-                    pokemon1 = log_first[turn][5]
-                    pokemon2_number = int(pokedex_dict[log_second[turn][5]])
-                    pokemon2 = log_second[turn][5] #current pokemon at that time as an object
-                imprimir_pokemons(screen,pokemon1_number,pokemon2_number)                  
-
-                #texto de accion
-                text = f"{log_second[turn][1]} changes {log_second[turn][2]} to {log_second[turn][5]} " 
-                texto_de_accion(screen,text,rectangle,font)
-        
-
-                #POKEMON AMIGO
-                texto_amigo = font.render(pokemon1, True, (0, 0, 0))
-                Pokemon_Amigo(screen,texto_amigo)
-
-                #POKEMON ENEMIGO       
-                text_enemigo = font.render(pokemon2, True, (0, 0, 0))
-                Pokemon_Enemigo(screen, text_enemigo)
-                time.sleep(1)
-                pygame.display.update()
-
-#////////////////////////////////////////////////////////////////////               
-            elif log_second[turn][3] == 'attack':
-                time.sleep(1)
-                #reseteo de fondo
-                screen.blit(background,[0,0])
-                time.sleep(1)
-                pygame.display.update()
-
-                #cambio de imagenes
-                if log_second[turn][1] == best_team.name: 
-                    pokemon1 = log_second[turn][5] #current pokemon at that time  
-                    pokemon1_number = int(pokedex_dict[pokemon1]) # pokemon podex number
-                    pokemon2 = log_first[turn][5]
-                    pokemon2_number = int(pokedex_dict[pokemon2])
-                else: 
-                    pokemon2 = log_second[turn][5] #current pokemon at that time  
-                    pokemon2_number = int(pokedex_dict[pokemon2]) # pokemon podex number
-                    pokemon1 = log_first[turn][5]
-                    pokemon1_number = int(pokedex_dict[pokemon1])
-                imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
-            
-                #POKEMON AMIGO
-                texto_amigo = font.render(pokemon1, True, (0, 0, 0))
-                Pokemon_Amigo(screen,texto_amigo)
-
-                #POKEMON ENEMIGO       
-                text_enemigo = font.render(pokemon2, True, (0, 0, 0))
-                Pokemon_Enemigo(screen, text_enemigo)
-        
-                #textp de accion 
-                text=  log_second[turn][4]
-                texto_de_accion(screen,text,rectangle,font)
-                time.sleep(1)
-                pygame.display.update()
-###############################################################################################
-                if log_first[turn][6]: #si es true significa que el ataque derribo al enemigo (Fainteo el pokemon de log_first)
-                    screen.blit(background,[0,0])
-                    pygame.display.update()
-
-                    #POKEMON AMIGO
-                    texto_amigo = font.render(pokemon1, True, (0, 0, 0))
-                    Pokemon_Amigo(screen,texto_amigo)
-
                     #POKEMON ENEMIGO       
-                    text_enemigo = font.render(pokemon2, True, (0, 0, 0))
+                    text_enemigo = font.render(pokemon2_inicio, True, (0, 0, 0))
                     Pokemon_Enemigo(screen, text_enemigo)
-
-                    imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
-                    text = (f"{log_first[turn][2]} has fainted")
+                    imprimir_pokemons(screen,pokedex_dict[pokemon1_inicio],pokedex_dict[pokemon2_inicio])
+                
+                    #texto de accion
+                    text = f"{log_first[turn][1]} changes {log_first[turn][2]} to {log_first[turn][5]} "
                     texto_de_accion(screen,text,rectangle,font)
-                    #time.sleep(1)
-                    pygame.display.update()
+                    pygame.display.flip()
                     
+                elif log_first[turn][3] == "attack": 
+                    #reseteo de fondo
                     screen.blit(background,[0,0])
                     pygame.display.update()
                     imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
+                
                     #POKEMON AMIGO
                     texto_amigo = font.render(pokemon1, True, (0, 0, 0))
                     Pokemon_Amigo(screen,texto_amigo)
-
                     #POKEMON ENEMIGO       
                     text_enemigo = font.render(pokemon2, True, (0, 0, 0))
                     Pokemon_Enemigo(screen, text_enemigo)
-                    text = f"{log_first[turn][2]} has changed to {log_first[turn][5]}"
+                
+                    #textp de accion 
+                    text=  log_first[turn][4]
                     texto_de_accion(screen,text,rectangle,font)
-                    time.sleep(1)
                     pygame.display.update()
-
-                    if log_second[turn][7] == "switch":  # si el team que derribo al otro pokemon qu
-                        if log_second[turn][1] == best_team.name: 
-                            pokemon1_number = int(pokedex_dict[log_second[turn][5]])  # pokemon podex number
-                            pokemon2_number = int(pokedex_dict[log_first[turn][5]])
-                        else:
-                            pokemon2_number = int(pokedex_dict[log_second[turn][5]])  # pokemon podex number
-                            pokemon1_number = int(pokedex_dict[log_first[turn][5]])
-
+   
+                    time.sleep(1)
+                    if log_second[turn][6]: #si es true significa que el ataque derribo al enemigo
                         screen.blit(background,[0,0])
                         pygame.display.update()
-                        imprimir_pokemons(screen, pokemon1_number, pokemon2_number)
-                        #POKEMON AMIGO
+
                         texto_amigo = font.render(pokemon1, True, (0, 0, 0))
                         Pokemon_Amigo(screen,texto_amigo)
-
-                        #POKEMON ENEMIGO       
+          
+                        text_enemigo = font.render(pokemon2, True, (0, 0, 0))
+                        Pokemon_Enemigo(screen, text_enemigo)
+                        imprimir_pokemons(screen, pokemon1_number, pokemon2_number)
+                        text=  (f"{log_second[turn][2]} has fainted")
+                        texto_de_accion(screen,text,rectangle,font)
+                    
+                        pygame.display.update()
+                        time.sleep(1)
+                       
+                        screen.blit(background,[0,0])
+                        pygame.display.update()
+                        imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
+                      
+                        texto_amigo = font.render(pokemon1, True, (0, 0, 0))
+                        Pokemon_Amigo(screen,texto_amigo)
+     
                         text_enemigo = font.render(pokemon2, True, (0, 0, 0))
                         Pokemon_Enemigo(screen, text_enemigo)
                         text = f"{log_second[turn][2]} has changed to {log_second[turn][5]}"
                         texto_de_accion(screen,text,rectangle,font)
-                        time.sleep(1)
                         pygame.display.update()
-###############################################################################################
-        break
+                        time.sleep(1)
+                        if log_first[turn][7] == "switch":  # si el team que derribo al otro pokemon quiere cambiar
+                            screen.blit(background,([0,0])) 
+                            pygame.display.update()
+                            imprimir_pokemons(screen, pokemon1_number, pokemon2_number)
+                            
+                            texto = pokemon1
+                            texto_amigo = font.render(texto, True, (0, 0, 0))
+                            Pokemon_Amigo(screen, texto_amigo)
 
+                            texto = pokemon2
+                            text_enemigo = font.render(texto, True, (0, 0, 0))
+                            Pokemon_Enemigo(screen, text_enemigo)
+                            text = f"{log_first[turn][2]} has changed to {log_first[turn][5]}"
+                            texto_de_accion(screen,text,rectangle,font)
+                            pygame.display.update()
+                            
+#////////////////////////////////////////////////////////////////////
+                elif log_first[turn][3] == 'skip': 
+                        screen.blit(background,[0,0])
+                        pygame.display.update()
+                        imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
+
+                        texto_amigo = font.render(pokemon1, True, (0, 0, 0))
+                        Pokemon_Amigo(screen,texto_amigo)
+  
+                        text_enemigo = font.render(pokemon2, True, (0, 0, 0))
+                        Pokemon_Enemigo(screen, text_enemigo)
+
+                        text=  f"{log_first[turn][1]} has skipped his turn"
+                        texto_de_accion(screen,text,rectangle,font)
+                        pygame.display.update()
+
+             
+                time.sleep(1)
+#////////////////////////////////////////////////////////////////////  CAMBIO DE LOG 
+#////////////////////////////////////////////////////////////////////
+                if log_second[turn][6]==0:
+                    if log_second[turn][3] == 'switch':
+                        #reseteo de fondo
+                        screen.blit(background,[0,0])
+                        pygame.display.update()
+                  
+                        if log_second[turn][1]== best_team.name: 
+                            pokemon1_inicio= log_second[turn][2] #current pokemon at the beginning
+                            pokemon2_inicio = log_first[turn][2]
+                            pokemon1_number = pokedex_dict[pokemon1_inicio] # pokemon podex number
+                            pokemon2_number = pokedex_dict[pokemon2_inicio]  
+                        else: 
+                            pokemon1_inicio= log_first[turn][2] #current pokemon at the beginning
+                            pokemon2_inicio = log_second[turn][2]
+                            pokemon1_number = pokedex_dict[pokemon1_inicio]  # pokemon podex number
+                            pokemon2_number = pokedex_dict[pokemon2_inicio]
+
+                        imprimir_pokemons(screen,pokemon1_number,pokemon2_number)                  
+                 
+                        text = f"{log_second[turn][1]} changes {log_second[turn][2]} to {log_second[turn][5]} " 
+                        texto_de_accion(screen,text,rectangle,font)
+                
+                        texto_amigo = font.render(pokemon1_inicio, True, (0, 0, 0))
+                        Pokemon_Amigo(screen,texto_amigo)
+                          
+                        text_enemigo = font.render(pokemon2_inicio, True, (0, 0, 0))
+                        Pokemon_Enemigo(screen, text_enemigo)
+                        pygame.display.update()
+        #////////////////////////////////////////////////////////////////////               
+                    elif log_second[turn][3] == 'attack':
+                       
+                        screen.blit(background,[0,0])
+                        pygame.display.update()
+                        
+                        imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
+                    
+                        texto_amigo = font.render(pokemon1, True, (0, 0, 0))
+                        Pokemon_Amigo(screen,texto_amigo)
+                             
+                        text_enemigo = font.render(pokemon2, True, (0, 0, 0))
+                        Pokemon_Enemigo(screen, text_enemigo)
+                
+                        
+                        text=  log_second[turn][4]
+                        texto_de_accion(screen,text,rectangle,font)
+                        #
+                        pygame.display.update()
+                        time.sleep(1)
+                        ###############################################################################################
+                        if log_first[turn][6]: #si es true significa que el ataque derribo al enemigo (Fainteo el pokemon de log_first)
+                            screen.blit(background,[0,0])
+                            pygame.display.update()
+                            
+                            texto_amigo = font.render(pokemon1, True, (0, 0, 0))
+                            Pokemon_Amigo(screen,texto_amigo)
+                                  
+                            text_enemigo = font.render(pokemon2, True, (0, 0, 0))
+                            Pokemon_Enemigo(screen, text_enemigo)
+                            imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
+                            text = (f"{log_first[turn][2]} has fainted")
+                            texto_de_accion(screen,text,rectangle,font)
+
+                            pygame.display.update() 
+                            time.sleep(1)
+                            screen.blit(background,[0,0])
+                            pygame.display.update()
+                            imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
+                            #POKEMON AMIGO
+                            texto_amigo = font.render(pokemon1, True, (0, 0, 0))
+                            Pokemon_Amigo(screen,texto_amigo)
+                            #POKEMON ENEMIGO       
+                            text_enemigo = font.render(pokemon2, True, (0, 0, 0))
+                            Pokemon_Enemigo(screen, text_enemigo)
+                            text = f"{log_first[turn][2]} has changed to {log_first[turn][5]}"
+                            texto_de_accion(screen,text,rectangle,font)
+                            pygame.display.update()
+                            time.sleep(1)
+                            if log_second[turn][7] == "switch":  # si el team que derribo al otro pokemon quiere cambiar
+                                screen.blit(background,[0,0])
+                                pygame.display.update()
+                                imprimir_pokemons(screen, pokemon1_number, pokemon2_number)
+                                
+                                texto_amigo = font.render(pokemon1, True, (0, 0, 0))
+                                Pokemon_Amigo(screen,texto_amigo)
+                                      
+                                text_enemigo = font.render(pokemon2, True, (0, 0, 0))
+                                Pokemon_Enemigo(screen, text_enemigo)
+                                text = f"{log_second[turn][2]} has changed to {log_second[turn][5]}"
+                                texto_de_accion(screen,text,rectangle,font)
+                                pygame.display.update()
+                               
+                turn += 1   
+    
+        
 def hp_bar(screen, hps_turno, pokemon1, pokemon2, pokemon_dict, moves_data): #151 es el 100% despues el porcentaje de vida_restante/vida_total va a ser lo que imprimamos en la vida
     largo_total = 151
     pokemon1, pokemon2 = Pokemon.from_dict(pokemon1, pokemon_dict, moves_data), Pokemon.from_dict(pokemon2, pokemon_dict, moves_data)
@@ -446,8 +358,9 @@ def texto_de_accion(screen,text,rectangle, font):
     pygame.draw.rect(screen, (255, 255, 255), rectangle)
     text_surface = font.render(text, True, (0,0,0))
     pygame.draw.rect(screen,(255,255,255),rectangle)
-    screen.blit(text_surface, (60, 470))
+    screen.blit(text_surface, (45, 470))
     pass 
+
 def Pokemon_Enemigo(screen, texto_enemigo):
     rectangle = pygame.Rect(20, 85, 190, 20)     
     pygame.draw.rect(screen, (255,255,255), rectangle)
@@ -471,70 +384,7 @@ def imprimir_pokemons(screen,pokemon1_number,pokemon2_number):
     equipo2_pokemon_image = pygame.transform.scale(pygame.image.load(f'data/imgs/{pokemon2_number}.png'),(200,200))
     screen.blit(equipo1_pokemon_image, (100, 225))
     screen.blit(equipo2_pokemon_image, (500, 105))
-
-def ingresar_equipo(screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,team):
-    title = title_font.render('Enter your team', True, (0,0,0))
-    # Create a string to store the current input
-    current_input = ''
-    while True:
-        # Calculate the position of the title
-        title_pos = ((screen_size[0] - title.get_width()) // 2, 20)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    # When the user presses enter, add the current input to the user's team
-                    current_input = current_input.lower().capitalize()
-                    if current_input not in pokedex_dict:
-                        screen.blit(background_inicio,[0,0])
-                        text = font.render("That pokemon does not exist!!", True, (0,0,0))
-                        screen.blit(text, (20, 20))
-                        pygame.display.flip()
-                        time.sleep(1)
-                        current_input = ''
-                    else:
-                        if current_input in team:
-                            screen.blit(background_inicio,[0,0])
-                            text = font.render("You already have that pokemon in your team!!", True, (0,0,0))
-                            screen.blit(text, (20, 20))
-                            pygame.display.flip()
-                            time.sleep(1)
-                            current_input = ''
-                        else:
-                            team.append(current_input)
-                            current_input = ''
-                elif event.key == pygame.K_BACKSPACE:
-                    # When the user presses backspace, remove the last character from the current input
-                    current_input = current_input[:-1]
-                else:
-                    # When the user presses any other key, add it to the current input
-                    current_input += event.unicode
-
-        # Clear the screen
-        screen.blit(background_inicio,[0,0])
-        screen.blit(title, title_pos)
-        # Draw the current input
-        text = font.render(current_input, True, (0,0,0))
-        screen.blit(text, (20, 80))
-
-        # Draw the user's team
-        team_text = team_font.render('Current team', True, (0,0,0))
-        for i, pokemon in enumerate(team):
-            screen.blit(team_text, (20, 120))
-            # Calculate the position of the Pokemon image
-            s = 3  # Number of columns
-            x = 20 + (i % s) * (screen_size[0] // s)
-            y = 160 + (i // s) * 160
-            pokemon_image = pygame.image.load(f'data/imgs/{str(pokedex_dict[pokemon]).zfill(3)}.png')
-            screen.blit(pokemon_image, (x, y))
-        if len(team) == 6:
-            pygame.display.flip()
-            time.sleep(1)
-            return team
-        pygame.display.flip()
-
+    
 def main():
     pokemon_elite_1 = ["Bronzong", "Jynx", "Grumpig", "Slowbro", "Gardevoir", "Xatu"]
     pokemon_elite_2 = ["Skuntank", "Toxicroak", "Swalot", "Venomoth", "Muk", "Crobat"]
@@ -553,120 +403,9 @@ def main():
     elite_4 = pokemon_to_obj(pokemon_elite_4, moves_dict, pokemon_dict, "elite_4")
     champion = pokemon_to_obj(pokemon_champion, moves_dict, pokemon_dict, "champion")
     agus_team = pokemon_to_obj(agus_team, moves_dict, pokemon_dict, "Agus_team",0)
-
-    # Initialize Pygame
-    pygame.init()
-
-    # Set the size of the window
-    screen = pygame.display.set_mode((514, 389))
-
-    # Set the title of the window
-    pygame.display.set_caption("Pokemon Battle")
-
-    # Create a font object
-    font = pygame.font.Font(None, 36)
-    title_font = pygame.font.Font(None, 72)
-    team_font = pygame.font.Font(None, 50)
-
-    # Create a list to store the user's team and the opponent's team
-    user_team = []
-    opponent_team = []
-    
-    inicio = True
-    img_inicio = pygame.image.load("Img_inicio.png").convert()
-    screen.blit(img_inicio,[0,0])
-    pygame.display.update()
-    while inicio:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    inicio = False
-    screen = pygame.display.set_mode((772, 518))
-    background_inicio = pygame.image.load("background2.jpg").convert()
-    screen_size = screen.get_size()
-    background_inicio = pygame.transform.scale(background_inicio, screen_size)
-    screen.blit(background_inicio,[0,0])
-    pygame.display.flip()
-    # Game loop
-    user_team = ingresar_equipo(screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,user_team)
-    user_team = pokemon_to_obj(user_team, moves_dict, pokemon_dict, "user_team")
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-        # Clear the screen
-        screen.blit(background_inicio,[0,0])
-
-        # Display the title of the window
-        title = title_font.render('Chose your oponent', True, (0,0,0))
-        title_pos = ((screen_size[0] - title.get_width()) // 2, 20)
-        screen.blit(title, title_pos)
-        # Display the options for the opponent's team
-        opponent_options = [
-            "Elite 1: Bronzong, Jynx, Grumpig, Slowbro, Gardevoir, Xatu",
-            "Elite 2: Skuntank, Toxicroak, Swalot, Venomoth, Muk, Crobat",
-            "Elite 3: Hitmontop, Hitmonlee, Hariyama, Machamp, Lucario, Hitmonchan",
-            "Elite 4: Weavile, Spiritomb, Honchkrow, Umbreon, Houndoom, Absol",
-            "Champion: Salamence, Garchomp, Dragonite, Charizard, Altaria, Gyarados",
-            "Agus Team: Bouffalant, Delphox, Mamoswine, Tsareena, Greninja, Slaking",
-            "Custom Team (Enter your own team)"
-        ]
-
-        # Create a font object for the options
-        option_font = pygame.font.Font(None, 30)
-
-        # Calculate the position of the options
-        option_pos = [(20, 120 + i * 50) for i in range(len(opponent_options))]
-
-        # Draw the options on the screen
-        for i, option in enumerate(opponent_options):
-            option_text = option_font.render(option, True, (0, 0, 0))
-            screen.blit(option_text, option_pos[i])
-
-        # Check for user input
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                # Get the position of the mouse click
-                mouse_pos = pygame.mouse.get_pos()
-
-                # Check if the mouse click is within the option positions
-                for i, pos in enumerate(option_pos):
-                    if pos[0] <= mouse_pos[0] <= pos[0] + 300 and pos[1] <= mouse_pos[1] <= pos[1] + 30:
-                        # Perform an action based on the selected option
-                        if i == 0:
-                            # Elite 1 option selected
-                            opponent_team = elite_1
-                        elif i == 1:
-                            # Elite 2 option selected
-                            opponent_team = elite_2
-                        elif i == 2:
-                            # Elite 3 option selected
-                            opponent_team = elite_3
-                        elif i == 3:
-                            # Elite 4 option selected
-                            opponent_team = elite_4
-                        elif i == 4:
-                            # Champion option selected
-                            opponent_team = champion
-                        elif i == 5:
-                            # Agus Team option selected
-                            opponent_team = agus_team
-                        elif i == 6:
-                            # Custom Team option selected
-                            opponent_team = ingresar_equipo(screen, title_font, team_font, font, background_inicio, pokedex_dict, screen_size, opponent_team)
-                            opponent_team = pokemon_to_obj(opponent_team, moves_dict, pokemon_dict, "opponent_team")
-        
-        if opponent_team != []:
-            log_first, log_second = simulated_fight(user_team, opponent_team, effectiveness_dict, pokemon_dict, pokedex_dict, moves_dict)
-            simulated_combat_gui(user_team, opponent_team, effectiveness_dict, pokemon_dict, pokedex_dict, moves_dict, log_first, log_second)
-        
-        # Update the display
-        pygame.display.flip()
-
+    log_first, log_second, winner = simulated_fight(best_team,agus_team,effectiveness_dict)
+    #log_first, log_second = completar_logs()
+    ganador = simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_second).pokemons
     
 if __name__ == "__main__": 
     main()
