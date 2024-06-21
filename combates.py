@@ -130,16 +130,16 @@ def simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_s
                 
                     if log_first[turn][1] == best_team.name: 
                         pokemon1_inicio = log_first[turn][2]
-                        pokemon1_number = int(pokedex_dict[log_first[turn][5]]) 
+                        pokemon1_number = int(pokedex_dict[log_first[turn][5]]).zfill(3)
 
                         pokemon2_inicio = log_second[turn][2]
-                        pokemon2_number = int(pokedex_dict[log_second[turn][5]])
+                        pokemon2_number = int(pokedex_dict[log_second[turn][5]]).zfill(3)
 
                     else: 
-                        pokemon2_number = int(pokedex_dict[log_first[turn][5]])
-                        pokemon2 = log_first[turn][2]
-                        pokemon1_number = int(pokedex_dict[log_second[turn][5]])
-                        pokemon1 = log_second[turn][2]
+                        pokemon2_number = int(pokedex_dict[log_first[turn][5]]).zfill(3)
+                        pokemon2_inicio = log_first[turn][2]
+                        pokemon1_number = int(pokedex_dict[log_second[turn][5]]).zfill(3)
+                        pokemon1_inicio = log_second[turn][2]
                       
                     texto_amigo = font.render(pokemon1_inicio, True, (0, 0, 0))
                     Pokemon_Amigo(screen,texto_amigo)
@@ -157,14 +157,14 @@ def simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_s
                     pygame.display.update()
                     if log_first[turn][1] == best_team.name:
                         pokemon1 = log_first[turn][2]
-                        pokemon1_number = int(pokedex_dict[pokemon1])
+                        pokemon1_number = int(pokedex_dict[pokemon1]).zfill(3)
                         pokemon2 = log_second[turn][2]
-                        pokemon2_number = int(pokedex_dict[pokemon2])
+                        pokemon2_number = int(pokedex_dict[pokemon2]).zfill(3)
                     else:
                         pokemon2 = log_first[turn][2]
-                        pokemon2_number = int(pokedex_dict[pokemon2])
+                        pokemon2_number = int(pokedex_dict[pokemon2]).zfill(3)
                         pokemon1 = log_second[turn][2]
-                        pokemon1_number = int(pokedex_dict[pokemon1])
+                        pokemon1_number = int(pokedex_dict[pokemon1]).zfill(3)
 
                     imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
                     hp_bar(screen, hps[turn], pokemon1_number, pokemon2_number, pokemon_dict)
@@ -252,13 +252,13 @@ def simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_s
                         if log_second[turn][1]== best_team.name: 
                             pokemon1_inicio= log_second[turn][2] 
                             pokemon2_inicio = log_first[turn][2]
-                            pokemon1_number = pokedex_dict[pokemon1_inicio]
-                            pokemon2_number = pokedex_dict[pokemon2_inicio]  
+                            pokemon1_number = pokedex_dict[pokemon1_inicio].zfill(3)
+                            pokemon2_number = pokedex_dict[pokemon2_inicio].zfill(3) 
                         else: 
                             pokemon1_inicio= log_first[turn][2] 
                             pokemon2_inicio = log_second[turn][2]
-                            pokemon1_number = pokedex_dict[pokemon1_inicio]  
-                            pokemon2_number = pokedex_dict[pokemon2_inicio]
+                            pokemon1_number = pokedex_dict[pokemon1_inicio].zfill(3) 
+                            pokemon2_number = pokedex_dict[pokemon2_inicio].zfill(3)
 
                         imprimir_pokemons(screen,pokemon1_number,pokemon2_number)                  
                         hp_bar(screen, hps[turn], pokemon1_number, pokemon2_number, pokemon_dict)                        
@@ -278,14 +278,14 @@ def simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_s
                        
                         if log_second[turn][1] == best_team.name: 
                             pokemon1 = log_second[turn][2]   
-                            pokemon1_number = int(pokedex_dict[pokemon1]) 
+                            pokemon1_number = int(pokedex_dict[pokemon1]).zfill(3)
                             pokemon2 = log_first[turn][2]
-                            pokemon2_number = int(pokedex_dict[pokemon2])
+                            pokemon2_number = int(pokedex_dict[pokemon2]).zfill(3)
                         else: 
                             pokemon2 = log_second[turn][2] 
-                            pokemon2_number = int(pokedex_dict[pokemon2]) 
+                            pokemon2_number = int(pokedex_dict[pokemon2]).zfill(3)
                             pokemon1 = log_first[turn][2]
-                            pokemon1_number = int(pokedex_dict[pokemon1])
+                            pokemon1_number = int(pokedex_dict[pokemon1]).zfill(3)
 
                         imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
                         hp_bar(screen, hps[turn], pokemon1_number, pokemon2_number, pokemon_dict)
@@ -351,13 +351,67 @@ def simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_s
 def hp_bar(screen, hps_turno, pokemon1_number, pokemon2_number, pokemon_dict): #151 es el 100% despues el porcentaje de vida_restante/vida_total va a ser lo que imprimamos en la vida
     largo_total = 151
     vida_restante_1, vida_restante_2 = hps_turno[0], hps_turno[1]
+
     vida_total_1, vida_total_2 = pokemon_dict[int(pokemon1_number)]['hp'], pokemon_dict[int(pokemon2_number)]['hp']
+
     porcentaje1, porcentaje2 = (vida_restante_1/vida_total_1), (vida_restante_2/vida_total_2)
+
     largo1, largo2 = int(porcentaje1 * largo_total), int(porcentaje2 * largo_total)
+
     rect1 = pygame.Rect(151, 125, largo1, 9)
     rect2 = pygame.Rect(595, 353, largo2, 9)
     pygame.draw.rect(screen, (0, 255, 0), rect1, border_radius = 5)
     pygame.draw.rect(screen, (0, 255, 0), rect2, border_radius = 5)
+
+def menu(elite_1,elite_2,elite_3,elite_4,champion, agus): 
+    pygame.init()
+    screen = pygame.display.set_mode((512, 384))
+    pygame.display.set_caption("Pokemon Battle")
+    path = "Interfaz/pokemon_font.ttf"
+    background = pygame.image.load("Interfaz/pokemon_menu.png").convert()
+    screen.blit(background,[0,0])
+    enemy_images(screen)
+    pygame.display.update()
+    while True:
+        for event in pygame.event.get():   
+            if event.type == pygame.QUIT:   
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = pygame.mouse.get_pos()
+                if 0<= x <= 254 and 0 <= y <= 91: #will 
+                    return elite_1
+                    
+                elif 0<= x <= 254 and 91 <= y <= 194:#bruno
+                    return elite_3
+                    
+                elif 0 <= x <= 254 and 194 <= y <= 286: #koga
+                    return elite_2
+                    
+                elif 255 <= x <= 512 and 0 <= y <= 110: #karen 
+                    return elite_4
+                    
+                elif 255 <= x <= 512 and 110 <= y <= 208: #lance
+                    return champion
+                    
+                elif 255 <= x <= 512 and 208 <= y <= 303:
+                    return agus
+                    
+def enemy_images(screen):
+    bruno = pygame.transform.scale(pygame.image.load(f'data/imgs/bruno.png'),(55,55))
+    will  = pygame.transform.scale(pygame.image.load(f'data/imgs/will.png'),(67,67))
+    koga = pygame.transform.scale(pygame.image.load(f'data/imgs/koga.png'),(70,70))
+    karen = pygame.transform.scale(pygame.image.load(f'data/imgs/karen.png'),(67,67))
+    lance =pygame.transform.scale(pygame.image.load(f'data/imgs/lance.png'),(70,70))
+    agus=pygame.transform.scale(pygame.image.load(f'data/imgs/agus_character.png'),(65,65))
+
+    screen.blit(will, (10, 1))
+    screen.blit(bruno, (10, 100))
+    screen.blit(koga, (10, 185))
+    screen.blit(karen, (269, 10))
+    screen.blit(lance ,(269, 105))
+    screen.blit(agus, (269,205))
+    pass
 
 def pokemon_to_obj(poke_list: list, moves_dict, pokemon_dict, name: str, starter = 0) -> Team:
     dic = pokedex_number_dict()
@@ -398,6 +452,7 @@ def imprimir_pokemons(screen,pokemon1_number,pokemon2_number):
     equipo2_pokemon_image = pygame.transform.scale(pygame.image.load(f'data/imgs/{pokemon2_number}.png'),(200,200))
     screen.blit(equipo1_pokemon_image, (100, 225))
     screen.blit(equipo2_pokemon_image, (500, 105))
+
     
 def main():
     pokemon_elite_1 = ["Bronzong", "Jynx", "Grumpig", "Slowbro", "Gardevoir", "Xatu"]
@@ -414,10 +469,11 @@ def main():
     elite_1 = pokemon_to_obj(pokemon_elite_1, moves_dict, pokemon_dict, "elite_1")
     elite_2 = pokemon_to_obj(pokemon_elite_2, moves_dict, pokemon_dict, "elite_2")
     elite_3 = pokemon_to_obj(pokemon_elite_3, moves_dict, pokemon_dict, "elite_3")
-    elite_4 = pokemon_to_obj(pokemon_elite_4, moves_dict, pokemon_dict, "elite_4")
+    elite_4 = pokemon_to_obj(pokemon_elite_4, moves_dict, pokemon_dict, "elite_4") 
     champion = pokemon_to_obj(pokemon_champion, moves_dict, pokemon_dict, "champion")
     agus_team = pokemon_to_obj(agus_team, moves_dict, pokemon_dict, "Agus_team",0)
-    log_first, log_second, hps, winner = simulated_fight(best_team,agus_team,effectiveness_dict)
+    enemigo =  menu(elite_1,elite_2,elite_3,elite_4,champion,agus_team)
+    log_first, log_second, hps, winner = simulated_fight(best_team,enemigo,effectiveness_dict)
     ganador = simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_second, hps).pokemons
     
 if __name__ == "__main__": 
