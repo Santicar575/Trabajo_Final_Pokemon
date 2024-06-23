@@ -79,9 +79,8 @@ def simulated_fight(best_team: Team, team2: Team, effectiveness: dict) -> tuple:
         hps.append((int(hp_final_1), int(hp_final_2)))
     winner = best_team if any(pokemon.current_hp > 0 for pokemon in best_team.pokemons) else team2
 
-    for i in range(len(log_first)):
-        print(log_first[i])
-        print(log_second[i])
+    for i in range(len(hps)):
+        print(hps[i])
     return log_first, log_second, hps, winner
 
 
@@ -396,17 +395,20 @@ def hp_bar(screen: pygame.Surface, hps_turno: list, pokemon1_number: int, pokemo
     vida_restante_1, vida_restante_2 = hps_turno[0], hps_turno[1]
 
     vida_total_1, vida_total_2 = pokemon_dict[int(pokemon1_number)]['hp'], pokemon_dict[int(pokemon2_number)]['hp']
+    print("a",vida_total_1)
+    print("b",vida_restante_1)
 
     porcentaje1, porcentaje2 = (vida_restante_1/vida_total_1), (vida_restante_2/vida_total_2)
 
     largo1, largo2 = int(porcentaje1 * largo_total), int(porcentaje2 * largo_total)
-
+    print(porcentaje1)
+    print(porcentaje2)
     rect1 = pygame.Rect(151, 125, largo1, 9)
     rect2 = pygame.Rect(595, 353, largo2, 9)
     pygame.draw.rect(screen, (0, 255, 0), rect1, border_radius = 5)
     pygame.draw.rect(screen, (0, 255, 0), rect2, border_radius = 5)
 
-def menu(elite_1,elite_2,elite_3,elite_4,champion, agus): 
+def menu(elite_1, elite_2, elite_3, elite_4, champion, agus, screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,user_team): 
     pygame.init()
     screen = pygame.display.set_mode((512, 384))
     pygame.display.set_caption("Pokemon Battle")
@@ -439,8 +441,9 @@ def menu(elite_1,elite_2,elite_3,elite_4,champion, agus):
                     
                 elif 255 <= x <= 512 and 208 <= y <= 303:
                     return agus
+                
                 elif 384 <= x <= 512 and 320 <= y <= 384:
-                    return ingresar_equipo(screen, )
+                    return ingresar_equipo(screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,user_team)
 
 def ingresar_equipo(screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,team):
     title = title_font.render('Enter your team', True, (0,0,0))
@@ -512,8 +515,8 @@ def enemy_images(screen: pygame.Surface) -> None:
     will  = pygame.transform.scale(pygame.image.load(f'data/imgs/will.png'),(67,67))
     koga = pygame.transform.scale(pygame.image.load(f'data/imgs/koga.png'),(70,70))
     karen = pygame.transform.scale(pygame.image.load(f'data/imgs/karen.png'),(67,67))
-    lance =pygame.transform.scale(pygame.image.load(f'data/imgs/lance.png'),(70,70))
-    agus=pygame.transform.scale(pygame.image.load(f'data/imgs/agus_character.png'),(65,65))
+    lance = pygame.transform.scale(pygame.image.load(f'data/imgs/lance.png'),(70,70))
+    agus = pygame.transform.scale(pygame.image.load(f'data/imgs/agus_character.png'),(65,65))
 
     screen.blit(will, (10, 1))
     screen.blit(bruno, (10, 100))
@@ -621,51 +624,16 @@ def main():
     # Game loop
     user_team = ingresar_equipo(screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,user_team)
     user_team = pokemon_to_obj(user_team, moves_dict, pokemon_dict, "user_team")
+
+    opponent_team = menu(elite_1, elite_2, elite_3, elite_4, champion, agus_team, screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,user_team)
     
-    screen = pygame.display.set_mode((512, 384))
-    pygame.display.set_caption("Pokemon Battle")
-    path = "Interfaz/pokemon_font.ttf"
-    background = pygame.image.load("Interfaz/pokemon_menu.png").convert()
-    screen.blit(background,[0,0])
-    enemy_images(screen)
-    pygame.display.update()
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:   
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                x, y = pygame.mouse.get_pos()
-                if 0<= x <= 254 and 0 <= y <= 91: #will 
-                    opponent_team = elite_1
-                    
-                elif 0<= x <= 254 and 91 <= y <= 194:#bruno
-                    opponent_team = elite_3
-                    
-                elif 0 <= x <= 254 and 194 <= y <= 286: #koga
-                    opponent_team = elite_2
-                    
-                elif 255 <= x <= 512 and 0 <= y <= 110: #karen 
-                    opponent_team = elite_4
-                    
-                elif 255 <= x <= 512 and 110 <= y <= 208: #lance
-                    opponent_team = champion
-                    
-                elif 255 <= x <= 512 and 208 <= y <= 303:
-                    opponent_team = agus_team
-
-                elif 384 <= x <= 512 and 320 <= y <= 384:
-                    opponent_team = ingresar_equipo(screen, title_font, team_font, font, background_inicio, pokedex_dict, screen_size, opponent_team)
-                    opponent_team = pokemon_to_obj(opponent_team, moves_dict, pokemon_dict, "opponent_team")
-
         if opponent_team != []:
             log_first, log_second, hps, winner = simulated_fight(user_team, opponent_team, effectiveness_dict)
             simulated_combat_gui(user_team, pokemon_dict, pokedex_dict, log_first, log_second, hps)
         
         # Update the display
         pygame.display.flip()
-
-
 
 if __name__ == "__main__": 
     main()
