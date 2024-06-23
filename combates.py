@@ -64,6 +64,15 @@ def simulated_fight(best_team, team2, effectiveness):
         hps.append((int(hp_final_1), int(hp_final_2)))
     winner = best_team if any(pokemon.current_hp > 0 for pokemon in best_team.pokemons) else team2
 
+    for i in range(len(log_first)):
+        print(log_first[i])
+        print(log_second[i])
+
+    if log_first[-1][6] == 1:
+        print("gana log_second", log_second[-1][1])
+    else:
+        print("gana log_first", log_first[-1][1])
+
     return log_first, log_second, hps, winner 
 
 def simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_second, hps):
@@ -130,15 +139,15 @@ def simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_s
                 
                     if log_first[turn][1] == best_team.name: 
                         pokemon1_inicio = log_first[turn][2]
-                        pokemon1_number = int(pokedex_dict[log_first[turn][5]]).zfill(3)
+                        pokemon1_number = int(pokedex_dict[log_first[turn][5]].zfill(3))
 
                         pokemon2_inicio = log_second[turn][2]
-                        pokemon2_number = int(pokedex_dict[log_second[turn][5]]).zfill(3)
+                        pokemon2_number = int(pokedex_dict[log_second[turn][5]].zfill(3))
 
                     else: 
-                        pokemon2_number = int(pokedex_dict[log_first[turn][5]]).zfill(3)
+                        pokemon2_number = int(pokedex_dict[log_first[turn][5]].zfill(3))
                         pokemon2_inicio = log_first[turn][2]
-                        pokemon1_number = int(pokedex_dict[log_second[turn][5]]).zfill(3)
+                        pokemon1_number = int(pokedex_dict[log_second[turn][5]].zfill(3))
                         pokemon1_inicio = log_second[turn][2]
                       
                     texto_amigo = font.render(pokemon1_inicio, True, (0, 0, 0))
@@ -146,7 +155,7 @@ def simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_s
                     
                     text_enemigo = font.render(pokemon2_inicio, True, (0, 0, 0))
                     Pokemon_Enemigo(screen, text_enemigo)
-                    imprimir_pokemons(screen,pokedex_dict[pokemon1_inicio],pokedex_dict[pokemon2_inicio])
+                    imprimir_pokemons(screen,pokedex_dict[pokemon1_inicio].zfill(3),pokedex_dict[pokemon2_inicio].zfill(3))
                     hp_bar(screen, hps[turn], pokemon1_number, pokemon2_number, pokemon_dict)
                     text = f"{log_first[turn][1]} changes {log_first[turn][2]} to {log_first[turn][5]} "
                     texto_de_accion(screen,text,rectangle,font)
@@ -157,14 +166,14 @@ def simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_s
                     pygame.display.update()
                     if log_first[turn][1] == best_team.name:
                         pokemon1 = log_first[turn][2]
-                        pokemon1_number = int(pokedex_dict[pokemon1]).zfill(3)
+                        pokemon1_number = pokedex_dict[pokemon1].zfill(3)
                         pokemon2 = log_second[turn][2]
-                        pokemon2_number = int(pokedex_dict[pokemon2]).zfill(3)
+                        pokemon2_number = pokedex_dict[pokemon2].zfill(3)
                     else:
                         pokemon2 = log_first[turn][2]
-                        pokemon2_number = int(pokedex_dict[pokemon2]).zfill(3)
+                        pokemon2_number = pokedex_dict[pokemon2].zfill(3)
                         pokemon1 = log_second[turn][2]
-                        pokemon1_number = int(pokedex_dict[pokemon1]).zfill(3)
+                        pokemon1_number = pokedex_dict[pokemon1].zfill(3)
 
                     imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
                     hp_bar(screen, hps[turn], pokemon1_number, pokemon2_number, pokemon_dict)
@@ -207,23 +216,29 @@ def simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_s
                               
                         text_enemigo = font.render(pokemon2, True, (0, 0, 0))
                         Pokemon_Enemigo(screen, text_enemigo)
-                        text = f"{log_second[turn][2]} has changed to {log_second[turn][5]}"
-                        texto_de_accion(screen,text,rectangle,font)
-                        pygame.display.update()
-                        time.sleep(1)
-                        if log_first[turn][7] == "switch": 
-                            screen.blit(background,([0,0])) 
+
+                        if turn != len(log_first)-1:
+                            text = f"{log_second[turn][2]} has changed to {log_second[turn][5]}"
+                            texto_de_accion(screen,text,rectangle,font)
                             pygame.display.update()
-                            imprimir_pokemons(screen, pokemon1_number, pokemon2_number)
-                            hp_bar(screen, hps[turn], pokemon1_number, pokemon2_number, pokemon_dict)
-                            
-                            texto = pokemon1
-                            texto_amigo = font.render(texto, True, (0, 0, 0))
-                            Pokemon_Amigo(screen, texto_amigo)
-                            texto = pokemon2
-                            text_enemigo = font.render(texto, True, (0, 0, 0))
-                            Pokemon_Enemigo(screen, text_enemigo)
-                            text = f"{log_first[turn][2]} has changed to {log_first[turn][5]}"
+                            time.sleep(1)
+                            if log_first[turn][7] == "switch": 
+                                screen.blit(background,([0,0])) 
+                                pygame.display.update()
+                                imprimir_pokemons(screen, pokemon1_number, pokemon2_number)
+                                hp_bar(screen, hps[turn], pokemon1_number, pokemon2_number, pokemon_dict)
+                                
+                                texto = pokemon1
+                                texto_amigo = font.render(texto, True, (0, 0, 0))
+                                Pokemon_Amigo(screen, texto_amigo)
+                                texto = pokemon2
+                                text_enemigo = font.render(texto, True, (0, 0, 0))
+                                Pokemon_Enemigo(screen, text_enemigo)
+                                text = f"{log_first[turn][2]} has changed to {log_first[turn][5]}"
+                                texto_de_accion(screen,text,rectangle,font)
+                                pygame.display.update()
+                        else:
+                            text = f"{log_first[turn][1].upper()} IS THE WINNER"
                             texto_de_accion(screen,text,rectangle,font)
                             pygame.display.update()
 
@@ -278,16 +293,16 @@ def simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_s
                        
                         if log_second[turn][1] == best_team.name: 
                             pokemon1 = log_second[turn][2]   
-                            pokemon1_number = int(pokedex_dict[pokemon1]).zfill(3)
+                            pokemon1_number = pokedex_dict[pokemon1].zfill(3)
                             pokemon2 = log_first[turn][2]
-                            pokemon2_number = int(pokedex_dict[pokemon2]).zfill(3)
+                            pokemon2_number = pokedex_dict[pokemon2].zfill(3)
                         else: 
                             pokemon2 = log_second[turn][2] 
-                            pokemon2_number = int(pokedex_dict[pokemon2]).zfill(3)
+                            pokemon2_number = pokedex_dict[pokemon2].zfill(3)
                             pokemon1 = log_first[turn][2]
-                            pokemon1_number = int(pokedex_dict[pokemon1]).zfill(3)
+                            pokemon1_number = pokedex_dict[pokemon1].zfill(3)
 
-                        imprimir_pokemons(screen,pokemon1_number,pokemon2_number)
+                        imprimir_pokemons(screen, pokemon1_number, pokemon2_number)
                         hp_bar(screen, hps[turn], pokemon1_number, pokemon2_number, pokemon_dict)
                 
                         texto_amigo = font.render(pokemon1, True, (0, 0, 0))
@@ -324,27 +339,32 @@ def simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_s
                             hp_bar(screen, hps[turn], pokemon1_number, pokemon2_number, pokemon_dict)
                             texto_amigo = font.render(pokemon1, True, (0, 0, 0))
                             Pokemon_Amigo(screen,texto_amigo)
-                                  
                             text_enemigo = font.render(pokemon2, True, (0, 0, 0))
                             Pokemon_Enemigo(screen, text_enemigo)
-                            text = f"{log_first[turn][2]} has changed to {log_first[turn][5]}"
-                            texto_de_accion(screen,text,rectangle,font)
-                            pygame.display.update()
-                            time.sleep(1)
-                            if log_second[turn][7] == "switch":  
-                                screen.blit(background,[0,0])
-                                pygame.display.update()
-                                imprimir_pokemons(screen, pokemon1_number, pokemon2_number)
-                                hp_bar(screen, hps[turn], pokemon1_number, pokemon2_number, pokemon_dict)
-                                
-                                texto_amigo = font.render(pokemon1, True, (0, 0, 0))
-                                Pokemon_Amigo(screen,texto_amigo)
-                                      
-                                text_enemigo = font.render(pokemon2, True, (0, 0, 0))
-                                Pokemon_Enemigo(screen, text_enemigo)
-                                text = f"{log_second[turn][2]} has changed to {log_second[turn][5]}"
+
+                            if turn != len(log_first)-1:
+                                text = f"{log_first[turn][2]} has changed to {log_first[turn][5]}"
                                 texto_de_accion(screen,text,rectangle,font)
-                                pygame.display.update()                
+                                pygame.display.update()
+                                time.sleep(1)
+                                if log_second[turn][7] == "switch":  
+                                    screen.blit(background,[0,0])
+                                    pygame.display.update()
+                                    imprimir_pokemons(screen, pokemon1_number, pokemon2_number)
+                                    hp_bar(screen, hps[turn], pokemon1_number, pokemon2_number, pokemon_dict)
+                                    
+                                    texto_amigo = font.render(pokemon1, True, (0, 0, 0))
+                                    Pokemon_Amigo(screen,texto_amigo)
+                                        
+                                    text_enemigo = font.render(pokemon2, True, (0, 0, 0))
+                                    Pokemon_Enemigo(screen, text_enemigo)
+                                    text = f"{log_second[turn][2]} has changed to {log_second[turn][5]}"
+                                    texto_de_accion(screen,text,rectangle,font)
+                                    pygame.display.update() 
+                            else:
+                                text = f"{log_second[turn][1].upper()} IS THE WINNER"
+                                texto_de_accion(screen,text,rectangle,font)
+                                pygame.display.update()
                 turn += 1   
     
         
@@ -474,7 +494,7 @@ def main():
     agus_team = pokemon_to_obj(agus_team, moves_dict, pokemon_dict, "Agus_team",0)
     enemigo =  menu(elite_1,elite_2,elite_3,elite_4,champion,agus_team)
     log_first, log_second, hps, winner = simulated_fight(best_team,enemigo,effectiveness_dict)
-    ganador = simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_second, hps).pokemons
+    simulated_combat_gui(best_team, pokemon_dict, pokedex_dict, log_first, log_second, hps)
     
 if __name__ == "__main__": 
     main()
