@@ -96,9 +96,6 @@ def simulated_fight(best_team: Team, team2: Team, effectiveness: dict) -> tuple:
     for i in range(len(log_first)):
         print(log_first[i])
         print(log_second[i])
-    
-    winner = best_team if any(pokemon.current_hp > 0 for pokemon in best_team.pokemons) else team2
-    print(hps)
     return log_first, log_second, hps, winner
 
 
@@ -432,7 +429,7 @@ def hp_bar(screen: pygame.Surface, turno: int, hps: dict, pokemon1_number: int, 
     porcentaje1, porcentaje2 = (vida_restante_1/vida_total_1), (vida_restante_2/vida_total_2)
 
     largo1, largo2 = int(porcentaje1 * largo_total), int(porcentaje2 * largo_total)
-    print(largo1, largo2)
+        print(largo1, largo2)
     
     if porcentaje1 >= 0.5:
         color1 = (0, 255, 0)
@@ -447,15 +444,13 @@ def hp_bar(screen: pygame.Surface, turno: int, hps: dict, pokemon1_number: int, 
         color2 = (255, 255, 0)
     else:
         color2 = (255, 0, 0)
-    
+
     rect1 = pygame.Rect(151, 125, largo1, 9)
     rect2 = pygame.Rect(595, 353, largo2, 9)
-    pygame.draw.rect(screen,color1, rect1, border_radius = 5)
+    pygame.draw.rect(screen, color1, rect1, border_radius = 5)
     pygame.draw.rect(screen, color2, rect2, border_radius = 5)
 
-    
-
-def menu(elite_1: Team, elite_2: Team, elite_3: Team, elite_4: Team, champion: Team, agus: Team, screen: pygame.Surface, title_font: pygame.font.Font, team_font: pygame.font.Font, font: pygame.font.Font, background_inicio, pokedex_dict: dict, screen_size: tuple, user_team: Team): 
+def menu(elite_1,elite_2,elite_3,elite_4,champion, agus): 
     pygame.init()
     screen = pygame.display.set_mode((512, 384))
     pygame.display.set_caption("Pokemon Battle")
@@ -587,8 +582,8 @@ def enemy_images(screen: pygame.Surface) -> None:
     will  = pygame.transform.scale(pygame.image.load(f'data/imgs/will.png'),(67,67))
     koga = pygame.transform.scale(pygame.image.load(f'data/imgs/koga.png'),(70,70))
     karen = pygame.transform.scale(pygame.image.load(f'data/imgs/karen.png'),(67,67))
-    lance =pygame.transform.scale(pygame.image.load(f'data/imgs/lance.png'),(70,70))
-    agus=pygame.transform.scale(pygame.image.load(f'data/imgs/agus_character.png'),(65,65))
+    lance = pygame.transform.scale(pygame.image.load(f'data/imgs/lance.png'),(70,70))
+    agus = pygame.transform.scale(pygame.image.load(f'data/imgs/agus_character.png'),(65,65))
 
     screen.blit(will, (10, 1))
     screen.blit(bruno, (10, 100))
