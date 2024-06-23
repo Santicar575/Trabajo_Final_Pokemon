@@ -7,6 +7,8 @@ import random
 from functools import partial
 import numpy as np
 from tqdm import tqdm
+from funciones import leer_datos, pokedex_number_dict
+
 
 def random_adn(size_equipo,cant_pokemons,legendary,pokemon_dict):
     adn = []
@@ -25,65 +27,6 @@ def random_adn(size_equipo,cant_pokemons,legendary,pokemon_dict):
 
 def iniciar_poblacion(size_equipos,cant_pokemons,population_size,legendary,pokemon_dict):
     return [random_adn(size_equipos,cant_pokemons,legendary,pokemon_dict) for _ in range(population_size)]
-
-def leer_datos():
-    """ 
-    Crea tres diccionarios con los datos de los movimientos, pokemons y la tabla de efectividad
-
-    Returns:
-    moves_dict: Diccionario con los movimientos
-    pokemon_dict: Diccionario con los pokemons
-    dic_effectiveness_chart: key: tipo1, value: diccionario con la efectividad de cada tipo, donde el diccionario tiene como key el tipo2 y como value la efectividad en float
-    """ 
-    moves_dict = {}
-    pokemon_dict = {}
-    dic_effectiveness_chart = {}
-
-    with open ("data/moves.csv")as file: 
-        indexs = ((file.readline()).strip()).split(',')
-        lines = file.readlines()
-        for line in lines: 
-            line = line.strip().split(',')
-            dic_temp = {}    
-            for n_index,index in enumerate(indexs): 
-                if n_index !=0: 
-                    try : 
-                       dic_temp[index]= float(line[n_index])
-                    except: 
-                        dic_temp[index]= line[n_index]     
-              
-            moves_dict[line[0]] = dic_temp
-
-    with open("data/effectiveness_chart.csv") as file: 
-        indexs = ((file.readline()).strip()).split(',')
-        lines = file.readlines()
-        for line in lines: 
-            line = line.strip().split(',')
-            dic_temp = {}    
-            for n_index,index in enumerate(indexs): 
-                if n_index !=0: 
-                    dic_temp[index]= float(line[n_index])
-            dic_effectiveness_chart[line[0]]= dic_temp
-        
-    with open("data/pokemons.csv") as file: 
-        indexs= (file.readline().strip()).split(",")
-        lines = file.readlines()
-        for line in lines: 
-            line = line.strip().split(',')
-            dic_temp = {}
-            for n_index,index in enumerate(indexs):
-                if n_index !=0: 
-                    if index == "moves": 
-                        var_temp = line[n_index].split(";")
-                        dic_temp[index] = var_temp
-                    else: 
-                        try : 
-                            dic_temp[index]= float(line[n_index])
-                        except:
-                            dic_temp[index]= line[n_index]
-            pokemon_dict[int(line[0])] = dic_temp
-    
-    return moves_dict,pokemon_dict,dic_effectiveness_chart
 
 def fitness(adn,moves_dict,pokemon_dict,effectiveness_dict,equipos_aleatorios,adns_aleatorios)->int:
     batallas_ganadas = 0
@@ -137,6 +80,7 @@ def mutate(adn,mutation_rate,cant_pokemons,legendary,pokemon_dict)->list[int]:
         adn[-1] = adn[-1] - 5 if adn[-1] > 5 else adn[-1]
     
     return adn
+
 def quicksort(arr,parametro):
     if len(arr) <= 1:
         return arr
@@ -177,15 +121,6 @@ def cargar_datos(datos,population_size,generaciones,size_equipos,pokemon_dict):
                 cant_pokemons = quicksort(cant_pokemons,1)
                 cant_pokemons = [f'{pokemon[0]},{pokemon[1]}' for pokemon in cant_pokemons]
                 epochs.writelines(f"{num_generacion},{len(temp_dict.keys())},{','.join(cant_pokemons)}\n")
-
-def pokedex_number_dict():
-    pokedex_number_dict = {}
-    with open("data/pokemons.csv") as file:
-        file.readline()
-        for line in file:
-            line = line.strip().split(",")
-            pokedex_number_dict[line[1]] = line[0]
-    return pokedex_number_dict
 
 def enemy_teams_from_csv():
     pokedex_num_dict = pokedex_number_dict() 
