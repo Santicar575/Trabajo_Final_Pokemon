@@ -78,7 +78,7 @@ def simulated_fight(best_team: Team, team2: Team, effectiveness: dict) -> tuple:
                     faint2 = 1
                     fainted_2, fainted_1 = __faint_change__(best_team, team2, effectiveness)
         
-        contador1, contador2 = 0, 0
+        contador1, contador2 = 0, 0 
         for pokemon1, pokemon2 in zip(best_team.pokemons, team2.pokemons):
             if pokemon1.current_hp != 0: contador1 +=1
             if pokemon2.current_hp != 0: contador2 +=1
