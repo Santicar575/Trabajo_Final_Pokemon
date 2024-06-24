@@ -160,7 +160,8 @@ def simulated_combat_gui(best_team: Team, pokemon_dict: dict, pokedex_dict: dict
     poke_enemigo = pokemon_dict[int(pokemon2_number)]['name']
     texto_enemigo = font.render(poke_enemigo, True, (0, 0, 0))
     Pokemon_Enemigo(screen, texto_enemigo)    
-    imprimir_pokemons(screen,pokemon1_number,pokemon2_number,0,hps,pokemon_dict,pokedex_dict,contador1, contador2)
+    print(contador1, contador2)
+    imprimir_pokemons(screen,pokemon1_number,pokemon2_number,0,hps,pokemon_dict,pokedex_dict,6, 6)
 
     pygame.display.update()
     turn = 0
@@ -731,8 +732,8 @@ def main():
     team_font = pygame.font.Font(None, 50)
 
     # Create a list to store the user's team and the opponent's team
-    # user_team = ["Mewtwo", "Mew", "Rayquaza", "Arceus", "Giratina", "Dialga"]
-    user_team = []
+    user_team = ["Mewtwo", "Mew", "Rayquaza", "Arceus", "Giratina", "Dialga"]
+    # user_team = []
     opponent_team = []
     
     inicio = True
@@ -754,12 +755,12 @@ def main():
     screen.blit(background_inicio,[0,0])
     pygame.display.flip()
     # Game loop
-    if select_best_team_button(screen, font, background_inicio) == True:
-        user_team = team[4:]
-    else:
-        user_team = ingresar_equipo(screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,user_team)
+    # if select_best_team_button(screen, font, background_inicio) == True:
+    #     user_team = team[4:]
+    # else:
+    #     user_team = ingresar_equipo(screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,user_team)
        
-    # user_team = ingresar_equipo(screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,user_team)
+    user_team = ingresar_equipo(screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,user_team)
     user_team = pokemon_to_obj(user_team, moves_dict, pokemon_dict, "user_team")
 
     opponent_team = menu(elite_1, elite_2, elite_3, elite_4, champion, agus_team, screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,user_team)
