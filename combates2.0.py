@@ -1,5 +1,4 @@
 import pygame.locals
-from utils.combat import __faint_change__
 from utils.team import * 
 from utils.pokemon import *
 import pygame, sys, time 
@@ -8,7 +7,6 @@ from funciones import *
 def simulate_battle(team1, team2, effectiveness,pokemon_dict, moves_dict) -> Team:
 
         pygame.mixer.music.stop()
-        
         pygame.init()
 
         font = pygame.font.Font("Interfaz/pokemon_font.ttf", 36)
@@ -17,18 +15,15 @@ def simulate_battle(team1, team2, effectiveness,pokemon_dict, moves_dict) -> Tea
         pygame.display.set_caption("Pokemon Battle")
 
         background = pygame.image.load("Interfaz/background.jpg")
-        screen.blit(background, (0, 0))
-        
+        screen.blit(background, (0, 0))   
         pygame.mixer.music.load("Sonidos/Batalla.mp3")
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.2) 
         pygame.display.flip()
-
         pokemon1 = team1.get_current_pokemon()
         pokemon2 = team2.get_current_pokemon()
-        hp_bar(screen, pokemon1, pokemon2,background) 
         imprimir_pokemons(screen, pokemon1.name, pokemon2.name,team1,team2)
-        
+        hp_bar(screen, pokemon1, pokemon2, background)
 
         rectangle = pygame.Rect(30, 450, 680, 65) 
         text = "Inicio de batalla!!!"
@@ -46,11 +41,12 @@ def simulate_battle(team1, team2, effectiveness,pokemon_dict, moves_dict) -> Tea
         pygame.display.flip()
 
         wait_next_action()
+
         turn = 0
         while any(pokemon.current_hp > 0 for pokemon in team1.pokemons) and any(pokemon.current_hp > 0 for pokemon in team2.pokemons):     
             
-            hp_bar(screen, team1.get_current_pokemon(), team2.get_current_pokemon(),background)
             imprimir_pokemons(screen, team1.get_current_pokemon().name, team2.get_current_pokemon().name,team1,team2)
+            hp_bar(screen, team1.get_current_pokemon(), team2.get_current_pokemon(),background)
             texto_amigo = team1.get_current_pokemon().name
             Pokemon_Amigo(screen, font.render(team1.get_current_pokemon().name, True, (0,0,0)))
             texto_enemigo = team2.get_current_pokemon().name
@@ -81,34 +77,24 @@ def simulate_battle(team1, team2, effectiveness,pokemon_dict, moves_dict) -> Tea
                 second = team1
                 action_1, target_1, action_2, target_2 = action_2, target_2, action_1, target_1
 
-        
             action_1 = first.return_action(action_1, target_1, second, effectiveness)
-            if first == team1:
-                pokemon1 = first.get_current_pokemon()
-                pokemon2 = second.get_current_pokemon()
-            else:
-                pokemon1 = second.get_current_pokemon()
-                pokemon2 = first.get_current_pokemon()
-
-            hp_bar(screen, pokemon1, pokemon2,background)
+            pokemon1 = team1.get_current_pokemon()
+            pokemon2 = team2.get_current_pokemon()
             imprimir_accion(screen,action_1,font, pokemon1.name, pokemon2.name,background,team1,team2) 
-            wait_next_action() 
+            hp_bar(screen, pokemon1, pokemon2,background)
             pygame.display.flip()
+            wait_next_action() 
+          
             # If any of the pokemons fainted, the turn ends, and both have the chance to switch
             if team1.get_current_pokemon().current_hp == 0 or team2.get_current_pokemon().current_hp == 0:
-                if first == team1:
-                    pokemon1= first.get_current_pokemon()
-                    pokemon2 = second.get_current_pokemon()
-                else:
-                    pokemon2 = first.get_current_pokemon()
-                    pokemon1 = second.get_current_pokemon()
-
-                hp_bar(screen, pokemon1, pokemon2,background)
+                pokemon1 = team1.get_current_pokemon()
+                pokemon2 = team2.get_current_pokemon()
+                
                 faint = team1 if team1.get_current_pokemon().current_hp == 0 else team2
                 text = f"{faint.get_current_pokemon().name} fainted!!"
                 text_surface = font.render(text, True, (0,0,0))
-             
                 imprimir_accion(screen,text,font, pokemon1.name, pokemon2.name,background,team1,team2)
+                hp_bar(screen, pokemon1, pokemon2,background)
                 pygame.display.flip()  
                 wait_next_action()
                 __faint_change__(team1, team2, effectiveness,font,pokemon1,pokemon2,screen,background,pokemon_dict, moves_dict)
@@ -116,27 +102,23 @@ def simulate_battle(team1, team2, effectiveness,pokemon_dict, moves_dict) -> Tea
             else:
                 if action_2 == 'attack' and target_2 is None:
                     action_2, target_2 = second.get_next_action(first, effectiveness)
-                action_2 =second.return_action(action_2, target_2, first, effectiveness)
-
-                if first == team1:
-                    pokemon1= first.get_current_pokemon()
-                    pokemon2 = second.get_current_pokemon()
-                else:
-                    pokemon2 = first.get_current_pokemon()
-                    pokemon1= second.get_current_pokemon()
-                hp_bar(screen, pokemon1, pokemon2,background)
+                action_2 = second.return_action(action_2, target_2, first, effectiveness)
+                pokemon1 = team1.get_current_pokemon()
+                pokemon2 = team2.get_current_pokemon()
                 imprimir_accion(screen,action_2,font, pokemon1.name, pokemon2.name,background,team1,team2)
+                hp_bar(screen, pokemon1, pokemon2,background)
                 pygame.display.flip()   
-                wait_next_action()
-                
+                wait_next_action()                
 
                 if team1.get_current_pokemon().current_hp == 0 or team2.get_current_pokemon().current_hp == 0:
+                    pokemon1 = team1.get_current_pokemon()
+                    pokemon2 = team2.get_current_pokemon()
+                    
                     faint = team1 if team1.get_current_pokemon().current_hp == 0 else team2
-                    hp_bar(screen, pokemon1, pokemon2,background)
                     text = f"{faint.get_current_pokemon().name} fainted!!"
                     text_surface = font.render(text, True, (0,0,0))
                     imprimir_accion(screen,text,font, pokemon1.name, pokemon2.name,background,team1,team2)
-                
+                    hp_bar(screen, pokemon1, pokemon2,background)
                     pygame.display.flip()  
                     wait_next_action()
                     __faint_change__(team1, team2, effectiveness,font,pokemon1.name,pokemon2.name,screen,background,pokemon_dict, moves_dict)
@@ -156,7 +138,7 @@ def simulate_battle(team1, team2, effectiveness,pokemon_dict, moves_dict) -> Tea
         pygame.quit()
 
 def imprimir_accion(screen: pygame.Surface, accion: str, font: pygame.font.Font, pokemon1, pokemon2,background,team1,team2) -> None:
-    screen.blit(background, (0, 0))
+    screen.blit(background, (0,0))
     imprimir_pokemons(screen, pokemon1, pokemon2,team1,team2)
     Pokemon_Amigo(screen, font.render(pokemon1, True, (0,0,0)))
     Pokemon_Enemigo(screen, font.render(pokemon2, True, (0,0,0)))
@@ -172,13 +154,9 @@ def __faint_change__(team1, team2, effectiveness,font,pokemon1,pokemon2,screen,b
     action_1, target_1 = fainted_team.get_next_action(other_team, effectiveness)
     action_1 =fainted_team.return_action(action_1, target_1, other_team, effectiveness)
     action_2, target_2 = other_team.get_next_action(fainted_team, effectiveness)
-    if fainted_team == team1:
-        pokemon1 = fainted_team.get_current_pokemon()
-        pokemon2 = other_team.get_current_pokemon()
-    else:
-        pokemon1 = other_team.get_current_pokemon()
-        pokemon2 = fainted_team.get_current_pokemon()
-     
+    pokemon1 = team1.get_current_pokemon()
+    pokemon2 = team2.get_current_pokemon()
+  
     hp_bar(screen, pokemon1, pokemon2,background)
     imprimir_accion(screen,action_1,font, pokemon1.name, pokemon2.name,background,team1,team2)
     wait_next_action()
@@ -200,7 +178,6 @@ def wait_next_action():
                 break
         if next_turn:
             break
-        pygame.display.flip()
  
 def pokemon_to_object(name, poke_list, starter, pokemon_dict, moves_dict): 
     dic = pokedex_number_dict()
@@ -211,15 +188,11 @@ def pokemon_to_object(name, poke_list, starter, pokemon_dict, moves_dict):
     best_team = Team(name, team_temp, starter)
     return best_team
 
-def hp_bar(screen: pygame.Surface, pokemon1: Pokemon, pokemon2: Pokemon,background) -> None: #151 es el 100% despues el porcentaje de vida_restante/vida_total va a ser lo que imprimamos en la vida
+def hp_bar(screen: pygame.Surface, pokemon1: Pokemon, pokemon2: Pokemon,background) -> None: 
+    #151 es el 100% despues el porcentaje de vida_restante/vida_total va a ser lo que imprimamos en la vida
     largo_total = 151
-
     vida_total_1, vida_total_2 =  pokemon1.max_hp, pokemon2.max_hp
-
     vida_restante_1, vida_restante_2 = pokemon1.current_hp, pokemon2.current_hp
-    # print (f" {pokemon1.name} vida restante 1: {vida_restante_1}, vida total 1: {vida_total_1}")
-    # print (f"{pokemon2.name} vida restante 2: {vida_restante_2}, vida total 2: {vida_total_2}")
-
     porcentaje1, porcentaje2 = (vida_restante_1/vida_total_1), (vida_restante_2/vida_total_2)
 
     largo1, largo2 = int(porcentaje1 * largo_total), int(porcentaje2 * largo_total)
@@ -237,9 +210,9 @@ def hp_bar(screen: pygame.Surface, pokemon1: Pokemon, pokemon2: Pokemon,backgrou
         color2 = (255, 255, 0)
     else:
         color2 = (255, 0, 0)
-
-    rect1 = pygame.Rect(151, 125, largo1, 9)
-    rect2 = pygame.Rect(595, 353, largo2, 9)
+    print(vida_restante_1, vida_restante_2)
+    rect2 = pygame.Rect(151, 125, largo2, 9)
+    rect1 = pygame.Rect(595, 353, largo1, 9)
     pygame.draw.rect(screen, color1, rect1, border_radius = 5)
     pygame.draw.rect(screen, color2, rect2, border_radius = 5)
 
@@ -412,21 +385,19 @@ def Pokemon_Enemigo(screen: pygame.Surface, texto_enemigo: pygame.font.Font) -> 
     text_width = texto_enemigo.get_width()
     text_height = texto_enemigo.get_height()
     screen.blit(texto_enemigo, (rectangle.x + rectangle.width - text_width, rectangle.y + (rectangle.height - text_height) // 2)) 
-    rect = pygame.Rect(151, 125, 150, 9)
-    pygame.draw.rect(screen, (0, 255, 0), rect, border_radius = 5)
-
+    
 def Pokemon_Amigo(screen: pygame.Surface, text_amigo: pygame.font.Font) -> None:
     rectangle = pygame.Rect(457, 317, 195, 20) 
     pygame.draw.rect(screen, (255, 255, 255), rectangle)
     text_width = text_amigo.get_width()
     text_height = text_amigo.get_height()
     screen.blit(text_amigo, (rectangle.x + rectangle.width - text_width, rectangle.y + (rectangle.height - text_height) // 2))
-    rect = pygame.Rect(595, 353, 150, 9)
-    pygame.draw.rect(screen, (0, 255, 0), rect, border_radius = 5)
+    
    
 def imprimir_pokemons(screen: pygame.Surface, pokemon1: Pokemon, pokemon2: Pokemon,team1:Team,team2:Team,pokedex_dict=pokedex_number_dict(),   ) -> None: 
     pokemon1_number = pokedex_dict[pokemon1].zfill(3)
     pokemon2_number = pokedex_dict[pokemon2].zfill(3)
+    pokeball_image = pygame.transform.scale(pygame.image.load(f'Interfaz/pokemon_logo2.ico'),(20,20))
     x_amigo, x_enemigo = 450, 10
     equipo1_pokemon_image = pygame.transform.scale(pygame.image.load(f'data/imgs/{pokemon1_number}.png'),(200,200))
     equipo2_pokemon_image = pygame.transform.scale(pygame.image.load(f'data/imgs/{pokemon2_number}.png'),(200,200))
@@ -478,7 +449,7 @@ def main():
     pygame.display.set_caption("Pokemon Battle")
     pygame.mixer.music.load("Sonidos/Inicio.mp3")
     pygame.mixer.music.play(-1)
-    pygame.mixer.music.set_volume(0.2) 
+    pygame.mixer.music.set_volume(0) 
 
     # Create a font object
     font = pygame.font.Font(None, 36)
@@ -486,8 +457,8 @@ def main():
     team_font = pygame.font.Font(None, 50)
 
     # Create a list to store the user's team and the opponent's team
+    #user_team = ["Mewtwo", "Mew", "Rayquaza", "Arceus", "Giratina", "Dialga"]
     user_team = []
-    # user_team = []
     opponent_team = []
     
     inicio = True
@@ -519,9 +490,7 @@ def main():
 
     opponent_team = menu(elite_1, elite_2, elite_3, elite_4, champion, agus_team, screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,user_team)
     
-    simulate_battle(user_team, opponent_team, effectiveness_dict, pokemon_dict, moves_dict)
-    
-    # Update the display
+    simulate_battle(user_team, opponent_team, effectiveness_dict, pokemon_dict, moves_dict)    
 
 if __name__ == "__main__": 
     main()
