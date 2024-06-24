@@ -98,8 +98,8 @@ def quicksort(arr,parametro):
     return quicksort(left,parametro) + middle + quicksort(right,parametro)
 
 def cargar_datos(datos,population_size,generaciones,size_equipos,pokemon_dict):
-    with open("epochs.csv","w") as epochs:
-        with open("best_teams.csv","w") as best_teams:
+    with open("csv_generados/epochs.csv","w") as epochs:
+        with open("csv_generados/best_teams.csv","w") as best_teams:
             best_teams.writelines("epoch,aptitude,team_name,starter,pokemon_1,pokemon_2,pokemon_3,pokemon_4,pokemon_5,pokemon_6\n")
             cant_equipos = [i for i in range(population_size*(generaciones+1))]
             for num_generacion,generacion in enumerate(datos):
@@ -124,7 +124,7 @@ def cargar_datos(datos,population_size,generaciones,size_equipos,pokemon_dict):
 
 def enemy_teams_from_csv():
     pokedex_num_dict = pokedex_number_dict() 
-    with open("best_teams.csv") as file:
+    with open("csv_generados/best_teams.csv") as file:
         file.readline()
         lines = file.readlines()
         teams = []

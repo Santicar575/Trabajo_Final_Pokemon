@@ -32,6 +32,7 @@ def fitness_evolution() -> None: #Grafico 2
     for epoch in dic_fitness: 
         x.append(epoch)
         y.append(sum(dic_fitness[epoch])//50) 
+    plt.xticks(range(0, 51, 10))
     plt.plot(x,y)
     plt.xlabel("Epoch")
     plt.ylabel("Fitness")
@@ -136,6 +137,7 @@ def best_team_stats() -> None: #Grafico 6
     plt.subplot(polar = True)
     for stat in stats: 
         plt.plot(angles,stat)
+        plt.fill(angles,stat,alpha=0.1)
     plt.xticks(angles[:-1],subjects)
     plt.legend(best_team[4:],loc ='best')
     plt.show()
