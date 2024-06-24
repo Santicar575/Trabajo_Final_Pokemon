@@ -361,9 +361,9 @@ def select_best_team_button(screen, font, img_inicio):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
                 if 125 <= x <= 125+ 212 and 425<= y <= 425 + 98:
-                    return True
-                elif 476 <= x <= 476 + 212 and 425 <= y <= 425 + 98:
                     return False
+                elif 476 <= x <= 476 + 212 and 425 <= y <= 425 + 98:
+                    return True
                 
         text1_surface = font.render(text1, True, (0,0,0))
         text2_surface = font.render(text2, True, (0,0,0))
@@ -427,7 +427,6 @@ def Pokemon_Amigo(screen: pygame.Surface, text_amigo: pygame.font.Font) -> None:
 def imprimir_pokemons(screen: pygame.Surface, pokemon1: Pokemon, pokemon2: Pokemon,team1:Team,team2:Team,pokedex_dict=pokedex_number_dict(),   ) -> None: 
     pokemon1_number = pokedex_dict[pokemon1].zfill(3)
     pokemon2_number = pokedex_dict[pokemon2].zfill(3)
-    pokeball_image = pygame.transform.scale(pygame.image.load(f'Interfaz/pokemon_logo2.ico'),(20,20))
     x_amigo, x_enemigo = 450, 10
     equipo1_pokemon_image = pygame.transform.scale(pygame.image.load(f'data/imgs/{pokemon1_number}.png'),(200,200))
     equipo2_pokemon_image = pygame.transform.scale(pygame.image.load(f'data/imgs/{pokemon2_number}.png'),(200,200))
@@ -487,7 +486,7 @@ def main():
     team_font = pygame.font.Font(None, 50)
 
     # Create a list to store the user's team and the opponent's team
-    user_team = ["Mewtwo", "Mew", "Rayquaza", "Arceus", "Giratina", "Dialga"]
+    user_team = []
     # user_team = []
     opponent_team = []
     
@@ -520,10 +519,9 @@ def main():
 
     opponent_team = menu(elite_1, elite_2, elite_3, elite_4, champion, agus_team, screen,title_font,team_font,font,background_inicio,pokedex_dict,screen_size,user_team)
     
-    simulate_battle(elite_4, opponent_team, effectiveness_dict, pokemon_dict, moves_dict)
+    simulate_battle(user_team, opponent_team, effectiveness_dict, pokemon_dict, moves_dict)
     
     # Update the display
-    pygame.display.flip()
 
 if __name__ == "__main__": 
     main()
