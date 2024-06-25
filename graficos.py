@@ -183,7 +183,6 @@ def show_best_team(best_team: list, pokemon_dict) -> None: #Grafico 7
 
 def main():
     population_size = 50
-    print(get_best_team(50))
     while True:
         n = int(input("1. Diversidad vs Epoch\n2. Fitness Evolution\n3. Pokemons in last generation\n4. Type count in last generation\n5. Pokemon count by type over time\n6. Best team stats\n7. Show best team\n8. Exit\n"))
         match(n):
