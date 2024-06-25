@@ -126,11 +126,13 @@ def simulate_battle(team1: Team, team2: Team, effectiveness: dict, flag: bool) -
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.2) 
     print_action(screen, "The battle has ended", font, pokemon1.name, pokemon2.name, background, team1, team2)
+    pygame.display.flip()
     wait_next_action()
     if any(pokemon.current_hp > 0 for pokemon in team1.pokemons):
         print_action(screen, "You won the battle", font, pokemon1.name, pokemon2.name, background, team1, team2)
     else: 
         print_action(screen, "You lost the battle", font, pokemon1.name, pokemon2.name, background, team1, team2)
+    pygame.display.flip()
     wait_next_action()
     pygame.quit()
 
